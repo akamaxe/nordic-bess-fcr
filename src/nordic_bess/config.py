@@ -214,6 +214,21 @@ class ComplianceConfig:
 
 
 @dataclass(frozen=True)
+class TwinConfig:
+    """Simulink digital twin settings (PLAN M5)."""
+
+    dc_voltage_v: float
+    internal_resistance_ohm: float
+    rmse_tolerance_share: float
+
+    def __post_init__(self) -> None:
+        if not (self.dc_voltage_v > 0 and self.internal_resistance_ohm >= 0):
+            raise ConfigError("twin.dc_voltage_v must be > 0 and the resistance >= 0")
+        if not 0 < self.rmse_tolerance_share < 1:
+            raise ConfigError("twin.rmse_tolerance_share must be in (0, 1)")
+
+
+@dataclass(frozen=True)
 class PathsConfig:
     """Absolute project paths, resolved against the repository root."""
 
@@ -233,6 +248,7 @@ class Config:
     fcr: FcrRequirementsConfig
     simulation: SimulationConfig
     compliance: ComplianceConfig
+    twin: TwinConfig
     paths: PathsConfig
     source: Path
 
@@ -257,7 +273,7 @@ def config_from_dict(raw: dict[str, Any], root: Path, source: Path | None = None
         root: Repository root used to resolve the relative paths.
         source: File the mapping was read from (kept for traceability).
     """
-    sections = {"market", "bess", "fcr_requirements", "simulation", "compliance", "paths"}
+    sections = {"market", "bess", "fcr_requirements", "simulation", "compliance", "twin", "paths"}
     if missing := sections - set(raw):
         raise ConfigError(f"missing sections {sorted(missing)}")
     if unknown := set(raw) - sections:
@@ -324,6 +340,10 @@ def config_from_dict(raw: dict[str, Any], root: Path, source: Path | None = None
     _require_keys(cp, ComplianceConfig, "compliance")
     compliance = ComplianceConfig(**{k: float(v) for k, v in cp.items()})
 
+    tw = dict(raw["twin"])
+    _require_keys(tw, TwinConfig, "twin")
+    twin = TwinConfig(**{k: float(v) for k, v in tw.items()})
+
     p = dict(raw["paths"])
     _require_keys(p, PathsConfig, "paths")
     paths = PathsConfig(**{k: (root / v).resolve() for k, v in p.items()})
@@ -334,6 +354,7 @@ def config_from_dict(raw: dict[str, Any], root: Path, source: Path | None = None
         fcr=fcr,
         simulation=simulation,
         compliance=compliance,
+        twin=twin,
         paths=paths,
         source=(source or root).resolve(),
     )

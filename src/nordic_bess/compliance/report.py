@@ -12,6 +12,11 @@ def _fmt(value: float) -> str:
     return f"{value:.3f}" if abs(value) < 1000 else f"{value:.0f}"
 
 
+def _cell(text: str) -> str:
+    """Escape pipes (as in |dP_th|) so they do not split Markdown table cells."""
+    return text.replace("|", r"\|")
+
+
 def results_markdown(results: list[RequirementResult]) -> str:
     """Requirement / measured / threshold / pass table."""
     lines = [
@@ -21,8 +26,8 @@ def results_markdown(results: list[RequirementResult]) -> str:
     for r in results:
         unit = f" {r.unit}" if r.unit and r.unit not in ("p.u.", "steps") else ""
         lines.append(
-            f"| {r.requirement} | {r.product} | {_fmt(r.measured)}{unit} | {r.threshold} | "
-            f"{'PASS' if r.passed else 'FAIL'} | {r.explanation} |"
+            f"| {r.requirement} | {r.product} | {_fmt(r.measured)}{unit} | {_cell(r.threshold)} | "
+            f"{'PASS' if r.passed else 'FAIL'} | {_cell(r.explanation)} |"
         )
     return "\n".join(lines)
 

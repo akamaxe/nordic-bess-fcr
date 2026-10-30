@@ -1,0 +1,13 @@
+signal,requirement,product,measured_python,measured_simulink,passed_python,passed_simulink
+fcr_n_step,R1 up,FCR-N,0.0,0.0,True,True
+fcr_n_step,R1 down,FCR-N,-0.0,-0.0,True,True
+fcr_d_up_ramp,R1,FCR-D up,-0.0,-0.0,True,True
+fcr_d_up_ramp,R2,FCR-D up,1.0,1.0,True,True
+fcr_d_up_ramp,R2 hold,FCR-D up,0.0,0.0,True,True
+fcr_d_up_ramp,R3,FCR-D up,6.511851,6.511854,True,True
+fcr_d_up_ramp,R4,FCR-D up,1.155603,1.1556,True,True
+fcr_d_down_ramp,R1,FCR-D down,0.0,0.0,True,True
+fcr_d_down_ramp,R2,FCR-D down,1.0,1.0,True,True
+fcr_d_down_ramp,R2 hold,FCR-D down,0.0,0.0,True,True
+fcr_d_down_ramp,R3,FCR-D down,6.511851,6.511854,True,True
+fcr_d_down_ramp,R4,FCR-D down,1.155603,1.1556,True,True

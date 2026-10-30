@@ -63,6 +63,11 @@ compliance:                      # prequalification tests run on the BESS model 
   ler_start_margin_min: 2.0      # LER tests start 2 min of full activation before the NEM
                                  # threshold (allowed by section 3.5.3 to shorten the test)
 
+twin:                            # Simulink digital twin, DC side of the converter (PLAN M5)
+  dc_voltage_v: 1200.0           # nominal battery voltage (assumption)
+  internal_resistance_ohm: 0.0005  # 0.5 mOhm: about 0.35 % loss at 10 MW (assumption)
+  rmse_tolerance_share: 0.02     # PLAN M5 acceptance: RMSE < 2 % of C on the ramp test
+
 paths:
   raw: data/raw
   processed: data/processed

@@ -12,26 +12,26 @@ Requirements: *Technical Requirements for Frequency Containment Reserve Provisio
 
 | Requirement | Product | Measured | Threshold | Pass | Explanation |
 |---|---|---|---|---|---|
-| R1 up | FCR-N | 0.000 | [-0.05, 0.2] | PASS | dP_ss,1 = 7.460 MW: deviation +0.000 of |dP_th|, allowed [-0.05, +0.20] |
-| R1 down | FCR-N | -0.000 | [-0.2, 0.05] | PASS | dP_ss,2 = -7.460 MW: deviation -0.000 of |dP_th|, allowed [-0.20, +0.05] |
-| R1 | FCR-D up | -0.000 | [-0.05, 0.2] | PASS | P_ss,3 - P_ss,4 = 10.000 MW: deviation -0.000 of |dP_th|, allowed [-0.05, +0.20] |
-| R2 | FCR-D up | 1.000 | >= 0.86 | PASS | dP(7.5 s) = 10.000 MW = 1.000 |dP_th| (need 0.86) |
-| R2 hold | FCR-D up | 0.000 | <= 0.01 | PASS | largest drop below dP(7.5 s) before ramp 6: 0.0000 |dP_th| (small damped oscillations accepted; 1 % tolerance used) |
-| R3 | FCR-D up | 6.512 s | >= 3.2 s | PASS | E(7.5 s) = 65.12 MWs = 6.51 s x |dP_th| (need 3.2 s) |
-| R4 | FCR-D up | 1.156 s | <= 2.5 s | PASS | max excess energy after the nadir = 11.56 MWs = 1.16 s x |dP_th| |
-| R1 | FCR-D down | 0.000 | [-0.2, 0.05] | PASS | P_ss,3 - P_ss,4 = -10.000 MW: deviation +0.000 of |dP_th|, allowed [-0.20, +0.05] |
-| R2 | FCR-D down | 1.000 | >= 0.86 | PASS | dP(7.5 s) = 10.000 MW = 1.000 |dP_th| (need 0.86) |
-| R2 hold | FCR-D down | 0.000 | <= 0.01 | PASS | largest drop below dP(7.5 s) before ramp 6: 0.0000 |dP_th| (small damped oscillations accepted; 1 % tolerance used) |
-| R3 | FCR-D down | 6.512 s | >= 3.2 s | PASS | E(7.5 s) = 65.12 MWs = 6.51 s x |dP_th| (need 3.2 s) |
-| R4 | FCR-D down | 1.156 s | <= 2.5 s | PASS | max excess energy after the nadir = 11.56 MWs = 1.16 s x |dP_th| |
+| R1 up | FCR-N | 0.000 | [-0.05, 0.2] | PASS | dP_ss,1 = 7.460 MW: deviation +0.000 of \|dP_th\|, allowed [-0.05, +0.20] |
+| R1 down | FCR-N | -0.000 | [-0.2, 0.05] | PASS | dP_ss,2 = -7.460 MW: deviation -0.000 of \|dP_th\|, allowed [-0.20, +0.05] |
+| R1 | FCR-D up | -0.000 | [-0.05, 0.2] | PASS | P_ss,3 - P_ss,4 = 10.000 MW: deviation -0.000 of \|dP_th\|, allowed [-0.05, +0.20] |
+| R2 | FCR-D up | 1.000 | >= 0.86 | PASS | dP(7.5 s) = 10.000 MW = 1.000 \|dP_th\| (need 0.86) |
+| R2 hold | FCR-D up | 0.000 | <= 0.01 | PASS | largest drop below dP(7.5 s) before ramp 6: 0.0000 \|dP_th\| (small damped oscillations accepted; 1 % tolerance used) |
+| R3 | FCR-D up | 6.512 s | >= 3.2 s | PASS | E(7.5 s) = 65.12 MWs = 6.51 s x \|dP_th\| (need 3.2 s) |
+| R4 | FCR-D up | 1.156 s | <= 2.5 s | PASS | max excess energy after the nadir = 11.56 MWs = 1.16 s x \|dP_th\| |
+| R1 | FCR-D down | 0.000 | [-0.2, 0.05] | PASS | P_ss,3 - P_ss,4 = -10.000 MW: deviation +0.000 of \|dP_th\|, allowed [-0.20, +0.05] |
+| R2 | FCR-D down | 1.000 | >= 0.86 | PASS | dP(7.5 s) = 10.000 MW = 1.000 \|dP_th\| (need 0.86) |
+| R2 hold | FCR-D down | 0.000 | <= 0.01 | PASS | largest drop below dP(7.5 s) before ramp 6: 0.0000 \|dP_th\| (small damped oscillations accepted; 1 % tolerance used) |
+| R3 | FCR-D down | 6.512 s | >= 3.2 s | PASS | E(7.5 s) = 65.12 MWs = 6.51 s x \|dP_th\| (need 3.2 s) |
+| R4 | FCR-D down | 1.156 s | <= 2.5 s | PASS | max excess energy after the nadir = 11.56 MWs = 1.16 s x \|dP_th\| |
 | R8 | FCR-N | 2.190 | > 0.4085 (0.43 x 0.95) | PASS | min distance of G0 = F G to (-1, 0j): 2.190 |
-| R9 | FCR-N | 0.500 | < 1 | PASS | max K_margin |G/(1+FG)| / |1/D| = 0.500 over the tested periods |
+| R9 | FCR-N | 0.500 | < 1 | PASS | max K_margin \|G/(1+FG)\| / \|1/D\| = 0.500 over the tested periods |
 | R10 | FCR-N | 0.000 | < 1 | PASS | worst normalised RMS error of the fitted sine: 0.000 (T = 10 s) |
 | R8 | FCR-D up | 1.538 | > 0.4085 (0.43 x 0.95) | PASS | min distance of G0 = F G to (-1, 0j): 1.538 |
-| R9 | FCR-D up | 0.132 | < 1 | PASS | max K_margin |G/(1+FG)| / |1/D| = 0.132 over the tested periods |
+| R9 | FCR-D up | 0.132 | < 1 | PASS | max K_margin \|G/(1+FG)\| / \|1/D\| = 0.132 over the tested periods |
 | R10 | FCR-D up | 0.000 | < 1 | PASS | worst normalised RMS error of the fitted sine: 0.000 (T = 10 s) |
 | R8 | FCR-D down | 1.538 | > 0.4085 (0.43 x 0.95) | PASS | min distance of G0 = F G to (-1, 0j): 1.538 |
-| R9 | FCR-D down | 0.132 | < 1 | PASS | max K_margin |G/(1+FG)| / |1/D| = 0.132 over the tested periods |
+| R9 | FCR-D down | 0.132 | < 1 | PASS | max K_margin \|G/(1+FG)\| / \|1/D\| = 0.132 over the tested periods |
 | R10 | FCR-D down | 0.000 | < 1 | PASS | worst normalised RMS error of the fitted sine: 0.000 (T = 10 s) |
 | R12 (LER) | FCR-N | 12.000 | 12 steps | PASS | 12/12 steps as Table 12 expects, 362 min test; no abrupt stop |
 | R12 (LER) | FCR-D up | 5.000 | 5 steps | PASS | 5/5 steps as Table 13 expects, 126 min test; no abrupt stop |

@@ -1,0 +1,4 @@
+signal,product,c_mw,rmse_mw,rmse_share_of_c,max_abs_error_mw,identical_pass_fail,accepted
+fcr_n_step,FCR_N,7.46,1e-06,0.0,1.9e-05,True,True
+fcr_d_up_ramp,FCR_D_UP,10.0,2e-06,0.0,1.7e-05,True,True
+fcr_d_down_ramp,FCR_D_DOWN,10.0,2e-06,0.0,1.7e-05,True,True
