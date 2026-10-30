@@ -1,20 +1,17 @@
 # FCR specification notes
 
-Distilled from *Technical Requirements for Frequency Containment Reserve Provision in the
-Nordic Synchronous Area*, **version 1.1, 28 March 2025**, in force from **2 June 2025**
-(joint document of Energinet, Fingrid, Statnett and Svenska kraftnat).
+My working notes on *Technical Requirements for Frequency Containment Reserve Provision
+in the Nordic Synchronous Area*, version 1.1 of 28 March 2025, in force from 2 June 2025
+(joint document of Energinet, Fingrid, Statnett and Svenska kraftnät). The code cites
+these section, table and equation numbers.
 
 Official PDF:
 https://www.svk.se/495d28/siteassets/aktorsportalen/bidra-med-reserver/om-olika-reserver/fcr/fcr-technical-requirements_v1.1_28_march_2025.pdf
 
-> Save it locally as `docs/references/fcr-technical-requirements_v1.1.pdf` (gitignored).
-> These notes were transcribed by hand and cross-checked against the PDF on 2026-10-30
-> (Tables 1, 3, 4, 6, 7, 10-13; eq. 1-4, 7-12, 14-28). The former **VERIFY** items are
-> resolved below; each resolution cites the PDF page.
-> Not covered here: section 4 (measurement system), section 6 (telemetry and data logging),
-> section 3.11-3.12 (aggregation).
-
----
+The notes were checked against the PDF on 2026-10-30 (Tables 1, 3, 4, 6, 7, 10-13;
+eq. 1-4, 7-12, 14-28). Where the document is ambiguous, the reading used here is stated
+together with the PDF page. Sections 4 (measurement system), 6 (telemetry and data
+logging) and 3.11-3.12 (aggregation) are not covered.
 
 ## 1. Products and steady-state activation (section 3, Table 1)
 
@@ -332,4 +329,5 @@ and NEM/AEM behave as specified in sections 3.5.1-3.5.2.
 - Test results in an application must be less than 1 year old.
 - Prequalification is valid 5 years; reassessment also after equipment changes.
 - The TSOs provide an IT tool that evaluates test results and a tuning guideline (see
-  Svenska kraftnat's prequalification page). Stretch goal: compare our evaluator with it.
+  Svenska kraftnät's prequalification page). Comparing this evaluator with that tool is
+  still to do.

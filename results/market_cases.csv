@@ -1,9 +1,9 @@
 case,net_eur,eur_per_mw_year,cycles_per_year,solve_time_s,delta_vs_reference_eur_per_mw_year,vpi_eur_per_mw_year
-"S3 perfect foresight (hourly, total FCR prices)",1926695.62,192669.56,147.69,16.65,0.0,
-"S3 sequential: FCR bids on forecast, DA perfect",1633115.34,163311.53,139.86,50.21,-29358.03,29358.03
-S3 sequential: FCR and DA on forecast,1631508.28,163150.83,145.45,19.52,-29518.73,29518.73
-"S3 stochastic: FCR bids on 4 past-week scenarios, DA perfect",1685321.79,168532.18,91.62,67.66,-24137.38,24137.38
-"S3 perfect foresight, 15-min day-ahead",1929197.36,192919.74,150.53,58.96,250.17,
-"S3 perfect foresight, FCR prices of fcrAuction1 only",1899796.49,189979.65,128.53,17.56,-2689.91,
-"S3 perfect foresight, FCR prices of fcrAuction2 only",2397396.31,239739.63,257.18,18.92,47070.07,
-"S3 perfect foresight, FCR-N energy reservation 1.5 h",1685088.56,168508.86,176.01,22.2,-24160.71,
+"S3 perfect foresight (hourly, total FCR prices)",1926695.62,192669.56,147.69,8.11,0.0,
+"S3 sequential: FCR bids on forecast, DA perfect",1633115.34,163311.53,139.86,22.05,-29358.03,29358.03
+S3 sequential: FCR and DA on forecast,1631508.28,163150.83,145.45,8.2,-29518.73,29518.73
+"S3 stochastic: FCR bids on 4 past-week scenarios, DA perfect",1685321.79,168532.18,91.62,33.1,-24137.38,24137.38
+"S3 perfect foresight, 15-min day-ahead",1929197.36,192919.74,150.53,29.02,250.17,
+"S3 perfect foresight, FCR prices of fcrAuction1 only",1899796.49,189979.65,128.53,8.15,-2689.91,
+"S3 perfect foresight, FCR prices of fcrAuction2 only",2397396.31,239739.63,257.18,8.69,47070.07,
+"S3 perfect foresight, FCR-N energy reservation 1.5 h",1685088.56,168508.86,176.01,10.58,-24160.71,
