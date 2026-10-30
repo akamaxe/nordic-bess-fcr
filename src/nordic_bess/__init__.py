@@ -6,4 +6,4 @@ The package follows one battery in SE3 through three layers: market optimisation
 technical requirements v1.1 (`nordic_bess.compliance`).
 """
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"

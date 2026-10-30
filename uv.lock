@@ -606,7 +606,7 @@ wheels = [
 
 [[package]]
 name = "nordic-bess-fcr"
-version = "0.1.0"
+version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "entsoe-py" },

@@ -1,6 +1,6 @@
 [project]
 name = "nordic-bess-fcr"
-version = "0.1.0"
+version = "1.0.0"
 description = "A Nordic BESS from market decision to real-time control, validated against the FCR technical requirements v1.1."
 readme = "README.md"
 requires-python = ">=3.12"
