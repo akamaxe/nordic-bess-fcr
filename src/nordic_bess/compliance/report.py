@@ -1,4 +1,4 @@
-"""Markdown compliance report writer (PLAN M4): ``docs/compliance_report.md``."""
+"""Markdown compliance report writer: ``docs/compliance_report.md``."""
 
 from __future__ import annotations
 
@@ -43,7 +43,7 @@ def write_report(
     b, c = cfg.bess, cfg.compliance
     n_pass = sum(r.passed for r in results)
     unit = unit_description or (
-        f"Python BESS model: {b.p_max_mw:g} MW / {b.e_nom_mwh:g} MWh, usable window "
+        f"the Python BESS model, {b.p_max_mw:g} MW / {b.e_nom_mwh:g} MWh, usable window "
         f"{b.soc_min:.0%}-{b.soc_max:.0%}, converter time constant "
         f"{b.converter_time_constant_s:g} s, per-product droop controllers with NEM and AEM."
     )
@@ -55,12 +55,12 @@ def write_report(
         "Requirements: *Technical Requirements for Frequency Containment Reserve Provision in "
         f"the Nordic Synchronous Area*, version {cfg.fcr.version} (see docs/FCR_SPEC_NOTES.md).",
         "",
-        f"**Unit under test.** {unit}",
+        f"Unit under test: {unit}",
         "",
-        f"**Tested capacities.** FCR-N {c.c_fcr_n_mw:g} MW, FCR-D up {c.c_fcr_dup_mw:g} MW, "
+        f"Tested capacities: FCR-N {c.c_fcr_n_mw:g} MW, FCR-D up {c.c_fcr_dup_mw:g} MW, "
         f"FCR-D down {c.c_fcr_ddown_mw:g} MW, each product tested alone from the target SOC.",
         "",
-        f"**Result: {n_pass} of {len(results)} checks pass.**",
+        f"Result: {n_pass} of {len(results)} checks pass.",
         "",
         results_markdown(results),
         "",

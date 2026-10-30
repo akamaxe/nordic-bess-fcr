@@ -1,7 +1,7 @@
-"""Run the 2025 market backtest for strategies S0-S3 (PLAN M2).
+"""Run the 2025 market backtest for strategies S0-S3.
 
 Writes results/revenue_summary.csv, one schedule per strategy in
-results/backtest_<strategy>.parquet (input to the M3 simulation) and three figures in
+results/backtest_<strategy>.parquet (input to the simulation) and three figures in
 docs/figures/. Every solved day is checked against constraints 1-7.
 
 Usage: uv run python scripts/run_backtest.py --config configs/base.yaml

@@ -1,4 +1,4 @@
-"""Bidding strategies S0-S3 and the day-by-day backtest loop (PLAN M2).
+"""Bidding strategies S0-S3 and the day-by-day backtest loop.
 
 All strategies use the same MILP; a strategy only switches revenue streams off by
 fixing their variables to zero.

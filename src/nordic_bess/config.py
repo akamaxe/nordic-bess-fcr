@@ -46,7 +46,7 @@ class SolverConfig:
 
 @dataclass(frozen=True)
 class MarketConfig:
-    """Market layer settings (PLAN M2)."""
+    """Market layer settings."""
 
     bidding_zone: str
     backtest_start: pd.Timestamp
@@ -179,7 +179,7 @@ class FcrRequirementsConfig:
 
 @dataclass(frozen=True)
 class SimulationConfig:
-    """Time steps and windows for the asset simulation (PLAN M3)."""
+    """Time steps and windows for the asset simulation."""
 
     long_horizon_step_s: float
     test_signal_step_s: float
@@ -200,7 +200,7 @@ class SimulationConfig:
 
 @dataclass(frozen=True)
 class ComplianceConfig:
-    """Prequalification test settings for the BESS model (PLAN M4)."""
+    """Prequalification test settings for the BESS model."""
 
     c_fcr_n_mw: float
     c_fcr_dup_mw: float
@@ -218,7 +218,7 @@ class ComplianceConfig:
 
 @dataclass(frozen=True)
 class TwinConfig:
-    """Simulink digital twin settings (PLAN M5)."""
+    """Simulink digital twin settings."""
 
     dc_voltage_v: float
     internal_resistance_ohm: float

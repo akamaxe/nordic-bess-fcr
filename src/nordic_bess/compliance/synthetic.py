@@ -1,4 +1,4 @@
-"""Synthetic FCR units for testing the evaluators (PLAN M4 acceptance).
+"""Synthetic FCR units for testing the evaluators.
 
 A synthetic unit responds to the test frequency with ``gain`` times the ideal droop
 activation, delayed by ``delay_s`` and filtered by a first-order lag ``tau_s``.

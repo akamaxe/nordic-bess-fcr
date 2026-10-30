@@ -1,4 +1,4 @@
-"""Scenario-based two-stage stochastic bidding (PLAN M2b, optional item).
+"""Scenario-based two-stage stochastic bidding.
 
 First stage: hourly FCR capacities ``c_N``, ``c_Dup``, ``c_Ddown``, common to all
 scenarios (they are committed in the FCR auctions before prices are known). Second

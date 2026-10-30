@@ -1,4 +1,4 @@
-"""Download and process all input data into data/processed/ (PLAN M1).
+"""Download and process all input data into data/processed/.
 
 Sources: ENTSO-E day-ahead prices (needs ENTSOE_API_KEY in .env), Svenska kraftnat FCR
 capacity prices and Fingrid 10 Hz frequency for the simulation week. Raw downloads are
@@ -98,7 +98,7 @@ def write_samples(cfg: Config, prices: pd.Series, fcr: pd.DataFrame) -> None:
 
 
 def print_headline(cfg: Config, prices: pd.Series, fcr: pd.DataFrame) -> None:
-    """M1 acceptance: mean DA price and mean FCR price per product over the backtest window."""
+    """Print the mean DA price and mean FCR price per product over the backtest window."""
     s, e = cfg.market.backtest_start, cfg.market.backtest_end
     hourly = entsoe_prices.to_hourly(prices[(prices.index >= s) & (prices.index < e)])
     print(

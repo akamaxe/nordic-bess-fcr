@@ -1,11 +1,12 @@
-"""Market realism cases for the S3 strategy (PLAN M2b).
+"""Market cases for the S3 strategy.
 
 Compares the perfect-foresight S3 backtest with sequential decisions on naive forecasts
-(value of perfect information), with 15-minute day-ahead prices and with the single
-auction-round FCR price series. Writes results/m2b_summary.csv and
-docs/figures/market_m2b_cases.png. Run scripts/fetch_data.py first.
+(value of perfect information), a two-stage stochastic model on past-week scenarios,
+15-minute day-ahead prices, the single auction-round FCR price series and a 1.5 h FCR-N
+energy reservation. Writes results/market_cases.csv and docs/figures/market_cases.png.
+Run scripts/fetch_data.py first.
 
-Usage: uv run python scripts/run_m2b.py --config configs/base.yaml
+Usage: uv run python scripts/run_market_cases.py --config configs/base.yaml
 """
 
 from __future__ import annotations
@@ -27,7 +28,7 @@ from nordic_bess.market.stochastic import run_stochastic
 from nordic_bess.market.strategies import STRATEGIES, run_backtest
 from nordic_bess.reporting.style import BLUE, DPI, INK, INK_SECONDARY, new_figure
 
-log = logging.getLogger("run_m2b")
+log = logging.getLogger("run_market_cases")
 REFERENCE = "S3 perfect foresight (hourly, total FCR prices)"
 
 
@@ -49,7 +50,7 @@ def cases_figure(summary: pd.DataFrame):
         )
     ax.set_yticks(y, summary["case"])
     ax.set_xlabel("Net revenue [kEUR per MW-year]")
-    ax.set_title("S3 under market realism (SE3, 2025)", loc="left")
+    ax.set_title("S3 net revenue by case, SE3 2025", loc="left")
     ax.grid(axis="y", visible=False)
     ax.set_xlim(0, vals.max() * 1.12)
     fig.tight_layout()
@@ -130,9 +131,9 @@ def main() -> None:
     is_forecast = summary["case"].str.contains("forecast|stochastic")
     summary["vpi_eur_per_mw_year"] = np.where(is_forecast, ref - summary["eur_per_mw_year"], np.nan)
     cfg.paths.results.mkdir(parents=True, exist_ok=True)
-    summary.round(2).to_csv(cfg.paths.results / "m2b_summary.csv", index=False)
+    summary.round(2).to_csv(cfg.paths.results / "market_cases.csv", index=False)
     fig = cases_figure(summary)
-    fig.savefig(cfg.paths.figures / "market_m2b_cases.png", dpi=DPI)
+    fig.savefig(cfg.paths.figures / "market_cases.png", dpi=DPI)
     plt.close(fig)
     view = summary[
         ["case", "eur_per_mw_year", "delta_vs_reference_eur_per_mw_year", "cycles_per_year"]

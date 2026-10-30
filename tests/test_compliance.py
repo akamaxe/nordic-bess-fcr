@@ -1,4 +1,4 @@
-"""PLAN M4 acceptance tests: test signals and evaluators on synthetic units."""
+"""Tests of the FCR test signals and the requirement evaluators on synthetic units."""
 
 import dataclasses
 

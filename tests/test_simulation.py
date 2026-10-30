@@ -1,4 +1,4 @@
-"""PLAN M3 acceptance tests for the plant and the simulator."""
+"""Tests of the battery plant and the simulator."""
 
 import numpy as np
 import pandas as pd

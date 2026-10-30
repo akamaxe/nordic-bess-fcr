@@ -1,4 +1,4 @@
-%RUN_TWIN Build the BESS digital twin and run the exported FCR test signals (PLAN M5).
+%RUN_TWIN Build the BESS digital twin and run the exported FCR test signals.
 %   Prerequisite: uv run python scripts/export_twin_inputs.py --config configs/base.yaml
 %   Output: simulink/outputs/<signal>.csv with t_s, p_set_mw, p_out_mw, e_mwh, v_dc_v,
 %   q_ah, p_fcr_*_mw and p_nem_*_mw at the test-signal sample time. Then run

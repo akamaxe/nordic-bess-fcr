@@ -1,4 +1,4 @@
-"""Run the FCR prequalification tests on the BESS model and write the report (PLAN M4).
+"""Run the FCR prequalification tests on the BESS model and write the report.
 
 Writes docs/compliance_report.md, results/compliance_results.csv and the compliance
 figures in docs/figures/. Exits with status 1 if any requirement fails.

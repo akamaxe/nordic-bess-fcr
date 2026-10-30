@@ -4,12 +4,12 @@ market:
   bidding_zone: SE3              # ENTSO-E code "SE_3"
   backtest_start: "2025-01-01T00:00:00Z"
   backtest_end: "2026-01-01T00:00:00Z"   # exclusive
-  resolution_minutes: 60         # v0.1 optimiser runs hourly
+  resolution_minutes: 60         # the reference optimiser runs hourly
   products: [FCR_N, FCR_D_UP, FCR_D_DOWN]
   fcr_price_series: total        # "total" (volume-weighted over both rounds), "fcrAuction1"
                                  # (D-2) or "fcrAuction2" (D-1); see docs/DATA.md
-  lookback_days: 28              # history fetched before backtest_start (M2b forecasts)
-  scenario_weeks: 4              # M2b stochastic: scenarios = same hours of the past 4 weeks
+  lookback_days: 28              # history fetched before backtest_start (forecasts, scenarios)
+  scenario_weeks: 4              # stochastic model: scenarios = same hours of the past 4 weeks
   solver:                        # Pyomo + HiGHS settings for the daily MILP
     name: appsi_highs
     mip_rel_gap: 1.0e-6
@@ -56,7 +56,7 @@ simulation:
   week_start: "2025-03-03T00:00:00Z"   # pick a week inside the downloaded Fingrid month
   max_frequency_gap_s: 600       # longest frequency gap filled by linear interpolation
 
-compliance:                      # prequalification tests run on the BESS model (PLAN M4)
+compliance:                      # prequalification tests run on the BESS model
   c_fcr_n_mw: 7.46               # tested capacity: P_max / 1.34 (Table 10 power reservation)
   c_fcr_dup_mw: 10.0             # FCR-D alone may use the full converter rating
   c_fcr_ddown_mw: 10.0
@@ -64,10 +64,10 @@ compliance:                      # prequalification tests run on the BESS model 
   ler_start_margin_min: 2.0      # LER tests start 2 min of full activation before the NEM
                                  # threshold (allowed by section 3.5.3 to shorten the test)
 
-twin:                            # Simulink digital twin, DC side of the converter (PLAN M5)
+twin:                            # Simulink digital twin, DC side of the converter
   dc_voltage_v: 1200.0           # nominal battery voltage (assumption)
   internal_resistance_ohm: 0.0005  # 0.5 mOhm: about 0.35 % loss at 10 MW (assumption)
-  rmse_tolerance_share: 0.02     # PLAN M5 acceptance: RMSE < 2 % of C on the ramp test
+  rmse_tolerance_share: 0.02     # twin accepted if RMSE < 2 % of C on the ramp test
 
 paths:
   raw: data/raw

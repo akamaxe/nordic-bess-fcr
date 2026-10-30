@@ -1,4 +1,4 @@
-"""Market-layer figures (PLAN M2): revenue by strategy, monthly revenue, S3 allocation.
+"""Market-layer figures: revenue by strategy, monthly revenue, S3 allocation.
 
 Functions return matplotlib figures; scripts save them (PNG, dpi 150).
 """

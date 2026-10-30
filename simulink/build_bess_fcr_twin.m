@@ -1,5 +1,5 @@
 function model = build_bess_fcr_twin(P, model_dir)
-%BUILD_BESS_FCR_TWIN Build the Simulink digital twin of the BESS (PLAN M5).
+%BUILD_BESS_FCR_TWIN Build the Simulink digital twin of the BESS.
 %   MODEL = BUILD_BESS_FCR_TWIN(P, MODEL_DIR) creates and saves bess_fcr_twin.slx.
 %   P is the parameter struct from simulink/inputs/params.json (scripts/
 %   export_twin_inputs.py, values from configs/base.yaml).

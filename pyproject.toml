@@ -1,7 +1,7 @@
 [project]
 name = "nordic-bess-fcr"
 version = "1.0.0"
-description = "A Nordic BESS from market decision to real-time control, validated against the FCR technical requirements v1.1."
+description = "Bidding, control and FCR prequalification tests for a battery in the Swedish SE3 zone."
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }

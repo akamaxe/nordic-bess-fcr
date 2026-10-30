@@ -1,9 +1,8 @@
-"""Daily MILP: FCR-N, FCR-D up/down capacity and day-ahead arbitrage (PLAN M2).
+"""Daily MILP: FCR-N, FCR-D up/down capacity and day-ahead arbitrage.
 
 One model covers one UTC day of ``24 * periods_per_hour`` day-ahead periods; FCR
-capacities are hourly blocks. With ``periods_per_hour = 1`` this is exactly the v0.1
-formulation in docs/PLAN.md (constraints 1-7); with 4 it is the M2b variant with
-15-minute day-ahead prices and hourly FCR blocks.
+capacities are hourly blocks. ``periods_per_hour = 1`` gives the hourly reference
+model; 4 gives 15-minute day-ahead prices with hourly FCR blocks.
 
 Constraints (FCR v1.1, Table 10 for the LER power and energy reservation):
 
@@ -229,7 +228,7 @@ class DailyMilp:
         Args:
             prices: Day-ahead prices per period and FCR prices per hour.
             fixed_capacity: Optional ``(24, 3)`` array of FCR-N, FCR-D up, FCR-D down
-                capacities [MW] decided earlier (second stage of the sequential M2b
+                capacities [MW] decided earlier (second stage of the sequential
                 decision). Products disabled by the strategy stay at zero.
 
         Raises:
@@ -305,7 +304,7 @@ def constraint_violations(periods: pd.DataFrame, params: MilpParams, dt_h: float
     """Largest violation of constraints 1-7 in a solved schedule (0 = satisfied).
 
     Evaluated on the solution values, independently of the Pyomo model, so a modelling
-    error cannot hide a violation (PLAN M2 acceptance).
+    error cannot hide a violation.
 
     Returns:
         Mapping from constraint name to its largest violation in MW or MWh.

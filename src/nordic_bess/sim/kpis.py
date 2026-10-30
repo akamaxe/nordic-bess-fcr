@@ -1,4 +1,4 @@
-"""KPIs of a simulation run (PLAN M3): SOC, NEM/AEM time, availability, tracking error."""
+"""KPIs of a simulation run: SOC, NEM/AEM time, availability, tracking error."""
 
 from __future__ import annotations
 

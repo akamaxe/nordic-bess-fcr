@@ -1,5 +1,5 @@
 classdef TestFcrController < matlab.unittest.TestCase
-    %TESTFCRCONTROLLER Unit tests of the MATLAB controller and the Simulink twin (PLAN M5).
+    %TESTFCRCONTROLLER Unit tests of the MATLAB controller and the Simulink twin.
     %   Mirrors tests/test_control.py and tests/test_simulation.py. Run with
     %   runtests('simulink/tests').
 

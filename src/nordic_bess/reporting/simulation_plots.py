@@ -1,4 +1,4 @@
-"""Long-horizon simulation figures (PLAN M3)."""
+"""Long-horizon simulation figures."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Fill the result tables of README.md from results/*.csv (PLAN M6).
+"""Fill the result tables of README.md from results/*.csv.
 
 Every number in the README tables comes from a CSV written by the pipeline scripts.
 Blocks between ``<!-- BEGIN name -->`` and ``<!-- END name -->`` are replaced; a block
@@ -23,7 +23,7 @@ PRODUCTS = ("FCR-N", "FCR-D up", "FCR-D down")
 def revenue_table(df: pd.DataFrame, p_max_mw: float) -> str:
     scale = 1e3 * p_max_mw * df["hours"] / 8760.0
     lines = [
-        "| Strategy | Day-ahead | FCR-N | FCR-D up | FCR-D down | Degradation | **Net** | "
+        "| Strategy | Day-ahead | FCR-N | FCR-D up | FCR-D down | Degradation | Net | "
         "Cycles / yr |",
         "|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
@@ -41,10 +41,11 @@ def revenue_table(df: pd.DataFrame, p_max_mw: float) -> str:
         ]
         cells = " | ".join(f"{v:.1f}" for v in vals[:-1])
         lines.append(
-            f"| {r['strategy']} {r['description']} | {cells} | **{vals[-1]:.1f}** | "
+            f"| {r['strategy']} {r['description']} | {cells} | {vals[-1]:.1f} | "
             f"{r['cycles_per_year']:.0f} |"
         )
-    return "\n".join(lines) + "\n\nkEUR per MW-year (net = sum of the streams), SE3, 2025."
+    caption = "kEUR per MW-year, SE3, 2025. Net is the sum of the other columns."
+    return "\n".join(lines) + "\n\n" + caption
 
 
 def compliance_table(df: pd.DataFrame) -> str:
@@ -64,9 +65,10 @@ def compliance_table(df: pd.DataFrame) -> str:
             cells.append(f"{mark} ({value}{unit}; {r['threshold']})")
         lines.append(f"| {req} | " + " | ".join(cells) + " |")
     n_pass, n = int(df["passed"].sum()), len(df)
+    verdict = f"All {n} checks pass." if n_pass == n else f"{n_pass} of {n} checks pass."
     return (
-        "\n".join(lines) + f"\n\n**{n_pass} of {n} checks pass.** Details and figures: "
-        "[docs/compliance_report.md](docs/compliance_report.md)."
+        "\n".join(lines) + f"\n\n{verdict} Each cell gives the measured value and the limit. "
+        "The full report with figures is in [docs/compliance_report.md](docs/compliance_report.md)."
     )
 
 
@@ -91,7 +93,7 @@ def simulation_table(k: pd.Series) -> str:
     return "| KPI | Value |\n|---|---|\n" + "\n".join(f"| {a} | {b} |" for a, b in rows)
 
 
-def m2b_table(df: pd.DataFrame) -> str:
+def market_cases_table(df: pd.DataFrame) -> str:
     lines = [
         "| Case | Net kEUR / MW-yr | Change vs reference | Cycles / yr |",
         "|---|---:|---:|---:|",
@@ -136,7 +138,7 @@ def main() -> None:
         "revenue": (res / "revenue_summary.csv", lambda d: revenue_table(d, cfg.bess.p_max_mw)),
         "compliance": (res / "compliance_results.csv", compliance_table),
         "simulation": (res / "simulation_kpis.csv", lambda d: simulation_table(d.iloc[0])),
-        "m2b": (res / "m2b_summary.csv", m2b_table),
+        "market_cases": (res / "market_cases.csv", market_cases_table),
     }
     for name, (path, render) in blocks.items():
         if path.exists() and f"<!-- BEGIN {name} -->" in text:

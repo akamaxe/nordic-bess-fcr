@@ -1,4 +1,4 @@
-"""Sequential bidding with naive forecasts (PLAN M2b).
+"""Sequential bidding with naive forecasts.
 
 FCR capacity is procured before the day-ahead auction (D-2 and D-1 rounds), so the
 capacity decision has to rely on forecasts. Two sequential variants are compared with

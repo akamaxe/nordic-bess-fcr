@@ -1,6 +1,6 @@
-"""Backtest KPIs: revenue per stream, EUR/MW-year, cycles, product shares (PLAN M2).
+"""Backtest KPIs: revenue per stream, EUR/MW-year, cycles, product shares.
 
-FCR activation energy is not part of the planning model (it is checked in the M3
+FCR activation energy is not part of the planning model (it is checked in the asset
 simulation), so revenues here are capacity revenues plus day-ahead trading.
 """
 

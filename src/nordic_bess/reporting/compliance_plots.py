@@ -1,4 +1,4 @@
-"""Compliance figures (PLAN M4): step and ramp responses, Nyquist, closed loop, LER test."""
+"""Compliance figures: step and ramp responses, Nyquist, closed loop, LER test."""
 
 from __future__ import annotations
 

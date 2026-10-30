@@ -1,6 +1,6 @@
 """Time-domain simulation of the BESS with per-product FCR controllers, NEM and AEM.
 
-Two modes share this engine (PLAN M3): long horizon (1 s steps on 1 Hz measured
+Two modes share this engine: long horizon (1 s steps on 1 Hz measured
 frequency with the hourly MILP schedule) and high resolution (0.1 s steps on the
 prequalification test signals). The control laws are the pure functions in
 ``nordic_bess.control``; this module only holds the state between steps:

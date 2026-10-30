@@ -1,4 +1,4 @@
-"""PLAN M2 acceptance tests for the daily MILP (synthetic prices, no data files)."""
+"""Tests of the daily MILP on synthetic prices (no data files)."""
 
 import numpy as np
 import pandas as pd

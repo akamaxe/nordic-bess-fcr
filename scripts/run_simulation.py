@@ -1,8 +1,8 @@
-"""Simulate one week of measured frequency with the S3 schedule (PLAN M3).
+"""Simulate one week of measured frequency with the S3 schedule.
 
 Drives the BESS model at 1 s with Fingrid 1 Hz frequency and the hourly baseline and
 capacities from results/backtest_S3.parquet (run scripts/run_backtest.py first; without
-it the script falls back to a constant C_N = 5 MW as PLAN M3 allows). Writes
+it the script falls back to a constant C_N = 5 MW). Writes
 results/simulation_kpis.csv, results/simulation_week_<S>.parquet and two figures.
 
 Usage: uv run python scripts/run_simulation.py --config configs/base.yaml [--strategy S3]

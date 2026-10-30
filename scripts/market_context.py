@@ -1,4 +1,4 @@
-"""Yearly FCR capacity prices since 2021 for the executive summary (PLAN M6).
+"""Yearly FCR capacity prices since 2021 for the executive summary.
 
 Reads data/processed/fcr_prices_se3.parquet (written by scripts/fetch_data.py) and writes
 results/fcr_price_history.csv: mean price per product and calendar year (UTC), for the

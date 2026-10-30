@@ -1,4 +1,4 @@
-"""PLAN M2b tests: naive forecast and sequential bidding."""
+"""Tests of the naive forecast and sequential bidding."""
 
 import numpy as np
 import pandas as pd

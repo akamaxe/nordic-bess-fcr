@@ -1,7 +1,7 @@
-"""Price inputs for the backtest, aligned on UTC days (PLAN M2).
+"""Price inputs for the backtest, aligned on UTC days.
 
 Day-ahead prices are taken at the model resolution: the hourly mean of the native
-prices for the hourly model, or 15-minute prices for the M2b model (before the
+prices for the hourly model, or 15-minute prices for the 15-minute model (before the
 2025-10-01 switch the hourly price applies to its four quarters). FCR prices are hourly
 EUR/MW/h for the configured series.
 """
