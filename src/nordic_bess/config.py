@@ -30,6 +30,21 @@ def _utc_timestamp(value: Any, name: str) -> pd.Timestamp:
 
 
 @dataclass(frozen=True)
+class SolverConfig:
+    """MILP solver settings (Pyomo solver name, relative MIP gap, time limit)."""
+
+    name: str
+    mip_rel_gap: float
+    time_limit_s: float
+
+    def __post_init__(self) -> None:
+        if not 0 <= self.mip_rel_gap < 1:
+            raise ConfigError("market.solver.mip_rel_gap must be in [0, 1)")
+        if self.time_limit_s <= 0:
+            raise ConfigError("market.solver.time_limit_s must be positive")
+
+
+@dataclass(frozen=True)
 class MarketConfig:
     """Market layer settings (PLAN M2)."""
 
@@ -40,6 +55,7 @@ class MarketConfig:
     products: tuple[str, ...]
     fcr_price_series: str
     lookback_days: int
+    solver: SolverConfig
 
     def __post_init__(self) -> None:
         if self.fcr_price_series not in ("total", "fcrAuction1", "fcrAuction2"):
@@ -230,6 +246,7 @@ def config_from_dict(raw: dict[str, Any], root: Path, source: Path | None = None
 
     m = dict(raw["market"])
     _require_keys(m, MarketConfig, "market")
+    _require_keys(m["solver"], SolverConfig, "market.solver")
     market = MarketConfig(
         bidding_zone=str(m["bidding_zone"]),
         backtest_start=_utc_timestamp(m["backtest_start"], "market.backtest_start"),
@@ -238,6 +255,11 @@ def config_from_dict(raw: dict[str, Any], root: Path, source: Path | None = None
         products=tuple(m["products"]),
         fcr_price_series=str(m["fcr_price_series"]),
         lookback_days=int(m["lookback_days"]),
+        solver=SolverConfig(
+            name=str(m["solver"]["name"]),
+            mip_rel_gap=float(m["solver"]["mip_rel_gap"]),
+            time_limit_s=float(m["solver"]["time_limit_s"]),
+        ),
     )
 
     b = dict(raw["bess"])

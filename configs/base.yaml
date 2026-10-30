@@ -9,6 +9,10 @@ market:
   fcr_price_series: total        # "total" (volume-weighted over both rounds), "fcrAuction1"
                                  # (D-2) or "fcrAuction2" (D-1); see docs/DATA.md
   lookback_days: 14              # history fetched before backtest_start (M2b forecasts)
+  solver:                        # Pyomo + HiGHS settings for the daily MILP
+    name: appsi_highs
+    mip_rel_gap: 1.0e-6
+    time_limit_s: 60
 
 bess:
   p_max_mw: 10.0
