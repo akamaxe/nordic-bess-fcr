@@ -106,6 +106,16 @@ def m2b_table(df: pd.DataFrame) -> str:
     return "\n".join(lines)
 
 
+def spaced_separators(text: str) -> str:
+    """Write table separator rows as '| --- | ---: |' (markdownlint MD060)."""
+
+    def fix(m: re.Match) -> str:
+        cells = [c.strip() for c in m.group(0).strip().strip("|").split("|")]
+        return "| " + " | ".join(cells) + " |"
+
+    return re.sub(r"^\|(?:\s*:?-{3,}:?\s*\|)+\s*$", fix, text, flags=re.M)
+
+
 def replace_block(text: str, name: str, body: str) -> str:
     pattern = re.compile(rf"(<!-- BEGIN {name} -->\n).*?(<!-- END {name} -->)", re.S)
     if not pattern.search(text):
@@ -132,7 +142,7 @@ def main() -> None:
         if path.exists() and f"<!-- BEGIN {name} -->" in text:
             text = replace_block(text, name, render(pd.read_csv(path)))
             print(f"updated block {name} from {path.name}")
-    readme.write_text(text, encoding="utf-8")
+    readme.write_text(spaced_separators(text), encoding="utf-8")
 
 
 if __name__ == "__main__":

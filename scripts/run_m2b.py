@@ -11,6 +11,7 @@ Usage: uv run python scripts/run_m2b.py --config configs/base.yaml
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import logging
 
 import matplotlib.pyplot as plt
@@ -114,6 +115,14 @@ def main() -> None:
             f"S3 perfect foresight, FCR prices of {series} only",
             run_backtest(prices, params, s3, solver),
         )
+
+    # Regulatory sensitivity: the TSOs foresee 1-1.5 h of FCR-N energy per direction
+    # (FCR v1.1, section 3.5 note); 1.5 h tightens the energy reservation (constraints 5-6).
+    params_15 = dataclasses.replace(params, energy_hours_n=1.5)
+    add(
+        "S3 perfect foresight, FCR-N energy reservation 1.5 h",
+        run_backtest(hourly, params_15, s3, solver),
+    )
 
     summary = pd.DataFrame(rows)
     ref = summary.loc[summary["case"] == REFERENCE, "eur_per_mw_year"].iloc[0]
