@@ -101,6 +101,7 @@ class _ProductState:
     nem_buf: np.ndarray = field(default_factory=lambda: np.zeros(0))
     faem_buf: np.ndarray = field(default_factory=lambda: np.zeros(0))
     nem_current: float = 0.0
+    nem_allowed: int = 0
     f_ref: float = 0.0
 
 
@@ -121,6 +122,9 @@ COLUMNS = (
     "nem_current_n",
     "nem_current_dup",
     "nem_current_ddown",
+    "nem_allowed_n",
+    "nem_allowed_dup",
+    "nem_allowed_ddown",
     "aem_n",
     "aem_dup",
     "aem_ddown",
@@ -178,6 +182,12 @@ class FcrUnitSimulator:
         self._caps: dict[Product, float] = {}
         self._th = {}
 
+    def thresholds(self, product: Product):
+        """Energy thresholds of ``product`` in the current schedule block (Table 11)."""
+        if self._block < 0:
+            self._enter_block(0)
+        return self._th[product]
+
     def _enter_block(self, k: int) -> None:
         self._block = k
         self._caps = self.schedule.capacities(k)
@@ -199,6 +209,7 @@ class FcrUnitSimulator:
             st.f_ref = float(st.faem_buf.mean())  # previous 300 samples (eq. 18)
             if self._caps[prod] <= 0.0:
                 st.nem_low = st.nem_high = st.aem_low = st.aem_high = False
+                st.nem_allowed = 0
                 st.nem_buf[pos] = 0.0
                 st.faem_buf[pos] = F0_HZ[prod]
                 continue
@@ -210,6 +221,7 @@ class FcrUnitSimulator:
                 allowed, st.nem_low, st.nem_high = nem_update(
                     f, self.e, st.nem_low, st.nem_high, th
                 )
+            st.nem_allowed = allowed
             st.nem_buf[pos] = allowed
             st.faem_buf[pos] = f_aem(prod, f, st.aem_low or st.aem_high)
         self._buf_pos = (pos + 1) % self.opts.window_samples
@@ -251,6 +263,7 @@ class FcrUnitSimulator:
                 out[f"p_fcr_{sfx}_mw"][i] = p_tot - p_nem
                 out[f"p_nem_{sfx}_mw"][i] = p_nem
                 out[f"nem_current_{sfx}"][i] = st.nem_current
+                out[f"nem_allowed_{sfx}"][i] = st.nem_allowed
                 out[f"aem_{sfx}"][i] = float(st.aem_low or st.aem_high)
                 out[f"c_{sfx}_mw"][i] = c
             p_out, e_next, limited = plant_step(self.p_out, self.e, p_set, self.dt_s, b, self.alpha)
