@@ -32,6 +32,21 @@ def tracking_error_mw(df: pd.DataFrame) -> pd.Series:
     return df["p_out_mw"] - (df["p_base_mw"] + nem + df["p_ideal_mw"])
 
 
+def fcr_unavailable(df: pd.DataFrame) -> pd.Series:
+    """True where a sold product cannot be delivered.
+
+    A product is unavailable while its AEM is active (FCR v1.1, 3.5.2) or while the BMS
+    clips power in the direction the product needs: an empty battery (output below
+    setpoint) blocks FCR-N and FCR-D up, a full one blocks FCR-N and FCR-D down. A clip
+    in the other direction is a day-ahead delivery shortfall, reported separately.
+    """
+    n, up, down = (df[f"c_{s}_mw"] > 0 for s in SUFFIXES)
+    empty = df["energy_limited"] & (df["p_set_mw"] > df["p_out_mw"])
+    full = df["energy_limited"] & (df["p_set_mw"] < df["p_out_mw"])
+    aem = (n & df["aem_n"]) | (up & df["aem_dup"]) | (down & df["aem_ddown"])
+    return aem | (empty & (n | up)) | (full & (n | down))
+
+
 def simulation_kpis(df: pd.DataFrame, b: BatteryParams, e0_mwh: float) -> dict:
     """Summary of a run: energy, NEM/AEM shares, unavailability, throughput, tracking."""
     dt = _dt_s(df)
@@ -40,9 +55,8 @@ def simulation_kpis(df: pd.DataFrame, b: BatteryParams, e0_mwh: float) -> dict:
     e_range = b.e_max_mwh - b.e_min_mwh
     soc_fcr = (df["e_mwh"] - b.e_min_mwh) / e_range
     err = tracking_error_mw(df)
-    providing = (df[["c_n_mw", "c_dup_mw", "c_ddown_mw"]] > 0).any(axis=1)
-    aem_any = df[["aem_n", "aem_dup", "aem_ddown"]].any(axis=1)
-    unavailable = providing & (aem_any | df["energy_limited"])
+    unavailable = fcr_unavailable(df)
+    clipped = (df["p_set_mw"] - df["p_out_mw"]).where(df["energy_limited"], 0.0)
     kpis = {
         "duration_h": len(df) * h,
         "e_start_mwh": e0_mwh,
@@ -52,6 +66,7 @@ def simulation_kpis(df: pd.DataFrame, b: BatteryParams, e0_mwh: float) -> dict:
         "soc_fcr_max": float(soc_fcr.max()),
         "unavailable_minutes": float(unavailable.sum() * dt / 60.0),
         "energy_limited_minutes": float(df["energy_limited"].sum() * dt / 60.0),
+        "energy_shortfall_mwh": float(clipped.abs().sum() * h),
         "throughput_discharge_mwh": float(p.clip(lower=0).sum() * h),
         "throughput_charge_mwh": float((-p).clip(lower=0).sum() * h),
         "nem_energy_mwh": float(df[list(NEM_COLUMNS)].sum(axis=1).sum() * h),

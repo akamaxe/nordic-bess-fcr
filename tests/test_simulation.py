@@ -101,3 +101,53 @@ def test_schedule_from_backtest_hourly_blocks(config, battery):
     df = simulate(np.full(3 * 3600, 50.0), 1.0, sched, battery, config.fcr, 10.0)
     np.testing.assert_allclose(df["p_base_mw"].iloc[[0, 3600, 7200]], [1.0, -2.0, 0.0])
     assert simulation_kpis(df, battery, 10.0)["throughput_discharge_mwh"] > 0
+
+
+def test_unavailability_depends_on_the_clipped_direction():
+    from nordic_bess.sim.kpis import fcr_unavailable
+
+    base = {f"aem_{s}": False for s in ("n", "dup", "ddown")}
+    rows = [
+        # empty battery (output below setpoint) while only FCR-D down is sold: available
+        dict(
+            base,
+            c_n_mw=0.0,
+            c_dup_mw=0.0,
+            c_ddown_mw=5.0,
+            energy_limited=True,
+            p_set_mw=7.0,
+            p_out_mw=0.0,
+        ),
+        # empty battery with FCR-D up sold: unavailable
+        dict(
+            base,
+            c_n_mw=0.0,
+            c_dup_mw=5.0,
+            c_ddown_mw=0.0,
+            energy_limited=True,
+            p_set_mw=7.0,
+            p_out_mw=0.0,
+        ),
+        # full battery with FCR-N sold: unavailable
+        dict(
+            base,
+            c_n_mw=3.0,
+            c_dup_mw=0.0,
+            c_ddown_mw=0.0,
+            energy_limited=True,
+            p_set_mw=-5.0,
+            p_out_mw=0.0,
+        ),
+        # AEM of a sold product: unavailable
+        dict(
+            base,
+            c_n_mw=3.0,
+            c_dup_mw=0.0,
+            c_ddown_mw=0.0,
+            energy_limited=False,
+            p_set_mw=0.0,
+            p_out_mw=0.0,
+            aem_n=True,
+        ),
+    ]
+    assert list(fcr_unavailable(pd.DataFrame(rows))) == [False, True, True, True]
