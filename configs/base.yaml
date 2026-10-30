@@ -6,7 +6,9 @@ market:
   backtest_end: "2026-01-01T00:00:00Z"   # exclusive
   resolution_minutes: 60         # v0.1 optimiser runs hourly
   products: [FCR_N, FCR_D_UP, FCR_D_DOWN]
-  fcr_price_series: total        # "total" or a specific auction round; see docs/DATA.md
+  fcr_price_series: total        # "total" (volume-weighted over both rounds), "fcrAuction1"
+                                 # (D-2) or "fcrAuction2" (D-1); see docs/DATA.md
+  lookback_days: 14              # history fetched before backtest_start (M2b forecasts)
 
 bess:
   p_max_mw: 10.0
@@ -47,6 +49,7 @@ simulation:
   long_horizon_step_s: 1.0
   test_signal_step_s: 0.1
   week_start: "2025-03-03T00:00:00Z"   # pick a week inside the downloaded Fingrid month
+  max_frequency_gap_s: 600       # longest frequency gap filled by linear interpolation
 
 paths:
   raw: data/raw

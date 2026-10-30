@@ -39,8 +39,13 @@ class MarketConfig:
     resolution_minutes: int
     products: tuple[str, ...]
     fcr_price_series: str
+    lookback_days: int
 
     def __post_init__(self) -> None:
+        if self.fcr_price_series not in ("total", "fcrAuction1", "fcrAuction2"):
+            raise ConfigError("market.fcr_price_series must be total, fcrAuction1 or fcrAuction2")
+        if self.lookback_days < 0:
+            raise ConfigError("market.lookback_days must be >= 0")
         if self.backtest_end <= self.backtest_start:
             raise ConfigError("market.backtest_end must be after backtest_start")
         if self.resolution_minutes not in (15, 60):
@@ -160,10 +165,18 @@ class SimulationConfig:
     long_horizon_step_s: float
     test_signal_step_s: float
     week_start: pd.Timestamp
+    max_frequency_gap_s: float
 
     def __post_init__(self) -> None:
         if not (self.long_horizon_step_s > 0 and self.test_signal_step_s > 0):
             raise ConfigError("simulation steps must be positive")
+        if self.max_frequency_gap_s < 0:
+            raise ConfigError("simulation.max_frequency_gap_s must be >= 0")
+
+    @property
+    def week_end(self) -> pd.Timestamp:
+        """Exclusive end of the one-week long-horizon simulation window."""
+        return self.week_start + pd.Timedelta(days=7)
 
 
 @dataclass(frozen=True)
@@ -224,6 +237,7 @@ def config_from_dict(raw: dict[str, Any], root: Path, source: Path | None = None
         resolution_minutes=int(m["resolution_minutes"]),
         products=tuple(m["products"]),
         fcr_price_series=str(m["fcr_price_series"]),
+        lookback_days=int(m["lookback_days"]),
     )
 
     b = dict(raw["bess"])
@@ -262,6 +276,7 @@ def config_from_dict(raw: dict[str, Any], root: Path, source: Path | None = None
         long_horizon_step_s=float(s["long_horizon_step_s"]),
         test_signal_step_s=float(s["test_signal_step_s"]),
         week_start=_utc_timestamp(s["week_start"], "simulation.week_start"),
+        max_frequency_gap_s=float(s["max_frequency_gap_s"]),
     )
 
     p = dict(raw["paths"])
