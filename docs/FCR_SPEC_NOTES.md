@@ -8,8 +8,9 @@ Official PDF:
 https://www.svk.se/495d28/siteassets/aktorsportalen/bidra-med-reserver/om-olika-reserver/fcr/fcr-technical-requirements_v1.1_28_march_2025.pdf
 
 > Save it locally as `docs/references/fcr-technical-requirements_v1.1.pdf` (gitignored).
-> These notes were transcribed by hand. Before relying on any number, check it against the
-> PDF. Items marked **VERIFY** were ambiguous in the text extraction.
+> These notes were transcribed by hand and cross-checked against the PDF on 2026-10-30
+> (Tables 1, 3, 4, 6, 7, 10-13; eq. 1-4, 7-12, 14-28). The former **VERIFY** items are
+> resolved below; each resolution cites the PDF page.
 > Not covered here: section 4 (measurement system), section 6 (telemetry and data logging),
 > section 3.11-3.12 (aggregation).
 
@@ -71,12 +72,27 @@ Steady-state responses:
 | 4 | 390 | 391.7 | 690 | 0.24 | >= 300 | 49.9 | 50.1 | steady state, zero activation |
 | 5 | 690 | 693.8 | 750 | 0.24 | 60 | 49.0 | 51.0 | activation performance 2 |
 | 6 | 750 | 754.2 | 1050 | 0.24 | >= 300 | 50.0 | 50.0 | deactivation test 2 |
-| 7 | 1050 | 1050.8 **VERIFY** | 1350 | 0.24 | 300 | 49.7 | 50.3 | FCR-N + FCR-D combination |
+| 7 | 1050 | 1050.8 | 1350 | 0.24 | 300 | 49.7 | 50.3 | FCR-N + FCR-D combination |
 | 8 | 1350 | 1350.4 | 1650 | 0.24 | 300 | 49.89 | 50.11 | FCR-N + FCR-D combination |
 
 Ramps 7-8 are only needed when the combination of FCR-N and FCR-D is tested.
 Generate the signal from start frequency, ramp speed and target (the "end of ramp" column
-is then only a cross-check).
+is then only a cross-check). Resolved against PDF p. 16: the table values above are exactly
+those in the PDF, but the PDF's own "end of ramp" column disagrees with start + |df| / speed
+for ramp 1 (33.21 s computed vs 33.1 s), ramp 7 (1051.25 s vs 1050.8 s) and ramp 8
+(1350.79 s vs 1350.4 s). Ramps 0 and 2-6 agree to the printed precision. The generator uses
+speed and target, and a test asserts this documented mismatch.
+
+**Requirement 1b (combination FCR-N + FCR-D, ramps 6-7 and 6-8, PDF p. 20)**, upwards:
+
+-0.05 <= ((P_ss,x - P_ss,6) - |dP_N,th| - (|df_x| - 0.1) |dP_Dup,th| / 0.4)
+         / (|dP_N,th| + (|df_x| - 0.1) |dP_Dup,th| / 0.4) <= 0.20
+
+and the mirrored form for downwards (-0.20 ... 0.05, with + signs). P_ss,x is the steady
+state after ramp 7 or 8, df_x the frequency change from the end of ramp 6 to the end of
+ramp 7 or 8, taken as a magnitude (0.3 Hz for ramp 7 gives half FCR-D activation; 0.11 Hz for
+ramp 8 gives 2.5 %). The PDF prints the FCR-D factor as |df_x - 0.1| / 0.4. Only relevant
+when FCR-N and FCR-D are tested together.
 
 dP_th for FCR-D = theoretical steady-state response from 49.9 -> 49.5 Hz (up) or
 50.1 -> 50.5 Hz (down).
@@ -134,7 +150,7 @@ From 2-5 stationary periods per test, fit amplitude and phase:
 - If the test signal is injected inside the controller, multiply by the frequency
   measurement equipment transfer function F_FME(jw) (section 4.4).
 
-Power system model (eq. 11) - **VERIFY exact form in PDF**:
+Power system model (eq. 11), form confirmed against PDF p. 27:
 
 G(jw) = (dP_X / df_X) * (f0 / S_n) * 1 / (2 H jw + K_f * f0)   [p.u.]
 
@@ -153,8 +169,14 @@ Table 7 parameters:
 between measured points) must pass to the right of, and outside, a circle of radius **0.43**
 around (-1, 0j). A 95 % margin is accepted (stay outside radius 0.43 * 0.95). Computed
 separately for FCR-N, FCR-D up and FCR-D down with the *stability* parameters.
-**VERIFY sign convention:** eq. 10 writes G0 = F * G, the requirement box writes
-G0 = -F * G. Resolve against the figure in the PDF and document the choice.
+**Sign convention (resolved, PDF p. 27-29):** eq. 10 writes G0 = F * G and the Requirement 8
+box writes G0 = -F * G. We use **G0 = F * G**. F (eq. 7-9) is defined from the frequency
+control error (f_ref - f) to power, so an ideal proportional unit has F = 1 and the loop
+gain is F * G, consistent with the 1 + F G denominator of Requirement 9. With G0 = F * G an
+ideal unit gives a curve in the right half plane and a lagging unit enters the third
+quadrant near (-1, 0j) at short periods, which is what Figure 10 shows. With -F * G the
+ideal unit would sit at about -26 at low frequency and encircle (-1, 0j). The minus sign in
+the box corresponds to defining F from the frequency deviation (f - f0) instead.
 FCR-N exemption to a 75 % margin is possible on request (not modelled).
 
 **Requirement 9 (performance):** with the *performance* parameters and disturbance profile
@@ -208,6 +230,9 @@ The TSOs note that Table 10 and Table 11 will be re-evaluated (FCR-N energy fore
 - FCR-N: P_tot = P_FCR-N + 0.34 * C_N * NEM_current   (eq. 16), rate may be raised up to 0.50 * C_N.
 - FCR-D: P_tot = P_FCR-D + 0.20 * C_D * NEM_current   (eq. 17), rate may be raised up to 0.34 * C_D.
   Depleted FCR-D reservoirs must be restored within 120 min.
+- FCR-D NEM thresholds have no hysteresis in v1.1: enable and disable are both at 20 minutes
+  of remaining endurance (PDF p. 40, Table 11 p. 41). FCR-N uses 30 min (enable) and
+  57.5 min (disable).
 
 ### 6.2 Alert State Energy Management, AEM (section 3.5.2)
 
@@ -268,7 +293,8 @@ FCR-N (Table 12):
 | 10 | 133.5 | 10 | 49.91 | on | on | |
 | 11 | 143.5 | 30 | 50.0 | off | off | until NEM and AEM off |
 
-PDF example: simulated 1.34 MW / 2 MWh battery, C_N = 1 MW, initial SOC 62.5 %
+PDF example (Figure 20): simulated 1.34 MW / 2 MWh battery, C_N = 1 MW, 2 MWh reserved for
+FCR-N, initial SOC 62.5 %
 (useful as a regression test).
 
 FCR-D up / down (Table 13):
@@ -280,6 +306,13 @@ FCR-D up / down (Table 13):
 | 2 | 10.5 | 2.5 | 49.91 | 50.09 | on | off | NEM on when back in normal band |
 | 3 | 13 | 15 | 49.5 | 50.5 | off | on | hold 5 min after AEM on |
 | 4 | 28 | 15 | 49.91 | 50.09 | on -> off | off | until NEM and AEM off |
+
+PDF example (Figure 21, FCR-D down): "simulated 3 MW / 1 MWh battery, FCR-D capacity 3 MW,
+energy reserved for FCR-D 3 MWh", initial SOC 0 %. The caption is internally inconsistent
+(1 MWh vs 3 MWh); not used as a regression target.
+
+Table 12 step 6 and Table 13 step 4 list two NEM states in one cell (NEM off then on, or on
+then off, as the SOC crosses thresholds during the step); AEM is off at the end of both.
 
 **Requirement 12 (LER):** the response stays activated as long as the deviation persists,
 and NEM/AEM behave as specified in sections 3.5.1-3.5.2.
