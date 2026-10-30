@@ -74,18 +74,24 @@ def main() -> None:
     elapsed = time.perf_counter() - t0
 
     kpis = simulation_kpis(df, battery, e0)
+    # Endurance per product while it is sold (FCR v1.1, eq. 27-28): FCR-N = min(up, down).
     nem_p = df[["p_nem_n_mw", "p_nem_dup_mw", "p_nem_ddown_mw"]].sum(axis=1)
-    l_up, l_dn = endurance_minutes(
-        df["e_mwh"],
-        battery.e_min_mwh,
-        battery.e_max_mwh,
-        df["p_base_mw"] + nem_p,
-        df["c_n_mw"] + df["c_dup_mw"],
-        df["c_n_mw"] + df["c_ddown_mw"],
-    )
-    providing = (df[["c_n_mw", "c_dup_mw", "c_ddown_mw"]] > 0).any(axis=1)
-    kpis["endurance_up_min_minutes"] = float(pd.Series(l_up)[providing.to_numpy()].min())
-    kpis["endurance_down_min_minutes"] = float(pd.Series(l_dn)[providing.to_numpy()].min())
+    setpoint = df["p_base_mw"] + nem_p
+    for sfx, use_up, use_down in (("n", True, True), ("dup", True, False), ("ddown", False, True)):
+        c = df[f"c_{sfx}_mw"]
+        sold = (c > 0).to_numpy()
+        l_up, l_dn = endurance_minutes(
+            df["e_mwh"], battery.e_min_mwh, battery.e_max_mwh, setpoint, c, c
+        )
+        parts = [x for x, used in ((l_up, use_up), (l_dn, use_down)) if used]
+        endurance = pd.Series(
+            parts[0]
+            if len(parts) == 1
+            else pd.concat([pd.Series(parts[0]), pd.Series(parts[1])], axis=1)
+            .min(axis=1)
+            .to_numpy()
+        )
+        kpis[f"endurance_{sfx}_min_minutes"] = float(endurance[sold].min()) if sold.any() else None
     kpis["strategy"] = label
     kpis["simulation_runtime_s"] = elapsed
 
