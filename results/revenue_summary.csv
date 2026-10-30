@@ -1,0 +1,5 @@
+strategy,description,rev_da_eur,rev_fcr_n_eur,rev_fcr_dup_eur,rev_fcr_ddown_eur,cost_degradation_eur,net_eur,eur_per_mw_year,discharge_mwh,cycles_per_year,share_hours_fcr_n,mean_mw_fcr_n,share_hours_fcr_d_up,mean_mw_fcr_d_up,share_hours_fcr_d_down,mean_mw_fcr_d_down,hours,solve_time_s,max_constraint_violation
+S0,Day-ahead arbitrage only,530538.3358,0.0,0.0,0.0,-93679.2453,436859.0905,43685.909,9367.9245,520.4403,0.0,0.0,0.0,0.0,0.0,0.0,8760.0,7.3194,0.0
+S1,FCR-N only,0.0,1727586.3942,0.0,0.0,0.0,1727586.3942,172758.6394,0.0,0.0,1.0,7.4627,0.0,0.0,0.0,0.0,8760.0,1.9094,0.0
+S2,FCR-D up and down only,0.0,0.0,443434.303,399429.7882,0.0,842864.0912,84286.4091,0.0,0.0,0.0,0.0,0.9592,8.1318,0.9171,7.7106,8760.0,3.6693,0.0
+S3,"FCR-N, FCR-D and day-ahead co-optimised",192460.5556,1485169.1113,119033.6777,156615.7547,-26583.4772,1926695.6222,192669.5622,2658.3477,147.686,0.8766,6.2437,0.1445,1.0943,0.105,0.8354,8760.0,8.8261,0.0
