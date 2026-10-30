@@ -71,3 +71,29 @@ def test_forecast_errors_cost_money_and_fcr_forecast_dominates(config):
     assert a.max_violation <= 1e-6 and b.max_violation <= 1e-6
     # Settled at actual prices: the schedule carries the actual day-ahead prices.
     np.testing.assert_allclose(b.schedule["price_da_eur_per_mwh"], actual.da.to_numpy())
+
+
+def test_single_actual_scenario_matches_deterministic_s3(config):
+    from nordic_bess.market.milp import DailyMilp
+    from nordic_bess.market.stochastic import StochasticDailyMilp
+
+    params = MilpParams.from_config(config)
+    actual, _, _ = _prices(1, weekly_periodic=False, seed=9)
+    day = actual.day(START)
+    det = DailyMilp(params, STRATEGIES["S3"], config.market.solver).solve(day)
+    caps, objective, _ = StochasticDailyMilp(params, config.market.solver, 1).solve([day])
+    assert objective == pytest.approx(det.objective_eur, rel=1e-6)
+    fixed = DailyMilp(params, STRATEGIES["S3"], config.market.solver).solve(day, caps)
+    assert fixed.objective_eur == pytest.approx(det.objective_eur, rel=1e-6)
+
+
+def test_stochastic_with_weekly_pattern_equals_perfect_foresight(config):
+    from nordic_bess.market.stochastic import run_stochastic
+
+    params = MilpParams.from_config(config)
+    actual, extended, _ = _prices(2, weekly_periodic=True)
+    pf = summarise(run_backtest(actual, params, STRATEGIES["S3"], config.market.solver), params)
+    sto = run_stochastic(actual, extended, params, config.market.solver, n_weeks=1)
+    assert summarise(sto, params)["net_eur"] == pytest.approx(pf["net_eur"], rel=1e-6)
+    with pytest.raises(ValueError):
+        run_stochastic(actual, extended, params, config.market.solver, n_weeks=2)

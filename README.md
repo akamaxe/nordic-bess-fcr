@@ -91,6 +91,7 @@ is binding in about 94 % of the hours; the energy reservation in about a quarter
 | S3 perfect foresight (hourly, total FCR prices) | 192.7 | reference | 148 |
 | S3 sequential: FCR bids on forecast, DA perfect | 163.3 | -29.4 | 140 |
 | S3 sequential: FCR and DA on forecast | 163.2 | -29.5 | 145 |
+| S3 stochastic: FCR bids on 4 past-week scenarios, DA perfect | 168.5 | -24.1 | 92 |
 | S3 perfect foresight, 15-min day-ahead | 192.9 | +0.3 | 151 |
 | S3 perfect foresight, FCR prices of fcrAuction1 only | 190.0 | -2.7 | 129 |
 | S3 perfect foresight, FCR prices of fcrAuction2 only | 239.7 | +47.1 | 257 |
@@ -98,7 +99,9 @@ is binding in about 94 % of the hours; the energy reservation in about a quarter
 
 Deciding FCR bids on a naive "same hour last week" forecast costs about 15 % of the
 perfect-foresight revenue; almost all of that loss comes from the FCR decision, because
-little headroom is left for arbitrage once capacity is sold. 15-minute day-ahead prices
+little headroom is left for arbitrage once capacity is sold. A two-stage stochastic
+model that bids on the past four weeks as scenarios recovers about a fifth of that loss
+with far fewer cycles. 15-minute day-ahead prices
 (from October 2025) add almost nothing to an FCR-led strategy. Using only the thin
 second auction round would overstate revenue through its price spikes, which is why the
 volume-weighted series is the reference.

@@ -55,6 +55,7 @@ class MarketConfig:
     products: tuple[str, ...]
     fcr_price_series: str
     lookback_days: int
+    scenario_weeks: int
     solver: SolverConfig
 
     def __post_init__(self) -> None:
@@ -62,6 +63,8 @@ class MarketConfig:
             raise ConfigError("market.fcr_price_series must be total, fcrAuction1 or fcrAuction2")
         if self.lookback_days < 0:
             raise ConfigError("market.lookback_days must be >= 0")
+        if not 1 <= self.scenario_weeks <= self.lookback_days // 7:
+            raise ConfigError("market.scenario_weeks must be in [1, lookback_days // 7]")
         if self.backtest_end <= self.backtest_start:
             raise ConfigError("market.backtest_end must be after backtest_start")
         if self.resolution_minutes not in (15, 60):
@@ -290,6 +293,7 @@ def config_from_dict(raw: dict[str, Any], root: Path, source: Path | None = None
         products=tuple(m["products"]),
         fcr_price_series=str(m["fcr_price_series"]),
         lookback_days=int(m["lookback_days"]),
+        scenario_weeks=int(m["scenario_weeks"]),
         solver=SolverConfig(
             name=str(m["solver"]["name"]),
             mip_rel_gap=float(m["solver"]["mip_rel_gap"]),

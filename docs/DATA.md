@@ -14,7 +14,8 @@ from scratch; raw downloads are cached in `data/raw/` (gitignored) and refreshed
 ## Day-ahead prices (ENTSO-E)
 
 - Query: `EntsoePandasClient.query_day_ahead_prices("SE_3", start, end)` for
-  `[backtest_start - lookback_days, backtest_end)` = 2024-12-18 to 2026-01-01 UTC.
+  `[backtest_start - lookback_days, backtest_end)` = 2024-12-04 to 2026-01-01 UTC (28 days of
+  history for the M2b forecasts and scenarios).
 - The response is in Europe/Stockholm local time and **includes the end timestamp**
   (97 rows for one 15-minute day). The loader converts to UTC and keeps `[start, end)`.
 - Market time unit: hourly until delivery day 2025-09-30, 15 minutes from delivery day

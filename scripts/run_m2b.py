@@ -22,6 +22,7 @@ from nordic_bess.market import kpis
 from nordic_bess.market.inputs import load_backtest_prices
 from nordic_bess.market.milp import MilpParams
 from nordic_bess.market.sequential import FORECAST_LAG, naive_forecast, run_sequential
+from nordic_bess.market.stochastic import run_stochastic
 from nordic_bess.market.strategies import STRATEGIES, run_backtest
 from nordic_bess.reporting.style import BLUE, DPI, INK, INK_SECONDARY, new_figure
 
@@ -97,6 +98,13 @@ def main() -> None:
         run_sequential(hourly, forecast, params, solver, "all_forecast"),
     )
 
+    n = cfg.market.scenario_weeks
+    history = load_backtest_prices(cfg, start=s - pd.Timedelta(weeks=n))
+    add(
+        f"S3 stochastic: FCR bids on {n} past-week scenarios, DA perfect",
+        run_stochastic(hourly, history, params, solver, n),
+    )
+
     quarter = load_backtest_prices(cfg, periods_per_hour=4)
     add("S3 perfect foresight, 15-min day-ahead", run_backtest(quarter, params, s3, solver))
     for series in ("fcrAuction1", "fcrAuction2"):
@@ -110,7 +118,7 @@ def main() -> None:
     summary = pd.DataFrame(rows)
     ref = summary.loc[summary["case"] == REFERENCE, "eur_per_mw_year"].iloc[0]
     summary["delta_vs_reference_eur_per_mw_year"] = summary["eur_per_mw_year"] - ref
-    is_forecast = summary["case"].str.contains("forecast")
+    is_forecast = summary["case"].str.contains("forecast|stochastic")
     summary["vpi_eur_per_mw_year"] = np.where(is_forecast, ref - summary["eur_per_mw_year"], np.nan)
     cfg.paths.results.mkdir(parents=True, exist_ok=True)
     summary.round(2).to_csv(cfg.paths.results / "m2b_summary.csv", index=False)
