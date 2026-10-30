@@ -83,6 +83,26 @@ is binding in about 94 % of the hours; the energy reservation in about a quarter
 
 ![S3 allocation](docs/figures/market_allocation_heatmap_s3.png)
 
+### Market realism (M2b): forecasts, 15-minute prices, price series
+
+<!-- BEGIN m2b -->
+| Case | Net kEUR / MW-yr | Change vs reference | Cycles / yr |
+|---|---:|---:|---:|
+| S3 perfect foresight (hourly, total FCR prices) | 192.7 | reference | 148 |
+| S3 sequential: FCR bids on forecast, DA perfect | 163.3 | -29.4 | 140 |
+| S3 sequential: FCR and DA on forecast | 163.2 | -29.5 | 145 |
+| S3 perfect foresight, 15-min day-ahead | 192.9 | +0.3 | 151 |
+| S3 perfect foresight, FCR prices of fcrAuction1 only | 190.0 | -2.7 | 129 |
+| S3 perfect foresight, FCR prices of fcrAuction2 only | 239.7 | +47.1 | 257 |
+<!-- END m2b -->
+
+Deciding FCR bids on a naive "same hour last week" forecast costs about 15 % of the
+perfect-foresight revenue; almost all of that loss comes from the FCR decision, because
+little headroom is left for arbitrage once capacity is sold. 15-minute day-ahead prices
+(from October 2025) add almost nothing to an FCR-led strategy. Using only the thin
+second auction round would overstate revenue through its price spikes, which is why the
+volume-weighted series is the reference.
+
 ### Compliance: prequalification tests on the BESS model
 
 <!-- BEGIN compliance -->
@@ -145,13 +165,16 @@ refreshes the tables above from `results/`.
 
 ### Market layer
 
-- Price taker with **perfect foresight**: the backtest is an upper bound on revenue.
+- Price taker with **perfect foresight** in the reference case: an upper bound on revenue.
+  M2b replaces it with naive same-hour-last-week forecasts; no forecasting model beyond
+  that is attempted.
 - FCR prices: Svk publishes two procurement rounds (D-2, D-1) and no "Total" series; the
   model uses their volume-weighted mean ([docs/DATA.md](docs/DATA.md)).
 - Daily horizon on **UTC days**, each starting and ending at 50 % SOC; FCR activation
   energy, its settlement and the imbalance it causes are not part of the plan.
-- Hourly day-ahead resolution (the 15-minute prices since 2025-10-01 are averaged);
-  the FCR auction timing before the day-ahead gate closure is not modelled.
+- Hourly day-ahead resolution in the reference case (the 15-minute prices since
+  2025-10-01 are averaged; M2b runs them natively). In the sequential cases every
+  capacity offered is accepted at the clearing price (bids at 0 EUR/MW/h).
 
 ### Asset layer
 

@@ -97,12 +97,18 @@ def prepare_prices(
 
 
 def load_backtest_prices(
-    cfg: Config, periods_per_hour: int = 1, series: str | None = None
+    cfg: Config,
+    periods_per_hour: int = 1,
+    series: str | None = None,
+    start: pd.Timestamp | None = None,
 ) -> MarketPrices:
-    """Read processed prices and align them on the configured backtest window."""
+    """Read processed prices and align them on the backtest window.
+
+    ``start`` overrides the window start, e.g. one week earlier for the naive forecast
+    (it must lie within the ``lookback_days`` fetched by ``fetch_data.py``).
+    """
     series = series or cfg.market.fcr_price_series
     da = load_day_ahead(catalog.day_ahead_path(cfg))
     fcr = load_fcr_prices(catalog.fcr_prices_path(cfg), series)
-    return prepare_prices(
-        da, fcr, cfg.market.backtest_start, cfg.market.backtest_end, periods_per_hour, series
-    )
+    begin = cfg.market.backtest_start if start is None else start
+    return prepare_prices(da, fcr, begin, cfg.market.backtest_end, periods_per_hour, series)

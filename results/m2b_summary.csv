@@ -1,0 +1,7 @@
+case,net_eur,eur_per_mw_year,cycles_per_year,solve_time_s,delta_vs_reference_eur_per_mw_year,vpi_eur_per_mw_year
+"S3 perfect foresight (hourly, total FCR prices)",1926695.62,192669.56,147.69,7.74,0.0,
+"S3 sequential: FCR bids on forecast, DA perfect",1633115.34,163311.53,139.86,21.0,-29358.03,29358.03
+S3 sequential: FCR and DA on forecast,1631508.28,163150.83,145.45,7.93,-29518.73,29518.73
+"S3 perfect foresight, 15-min day-ahead",1929197.36,192919.74,150.53,27.22,250.17,
+"S3 perfect foresight, FCR prices of fcrAuction1 only",1899796.49,189979.65,128.53,7.97,-2689.91,
+"S3 perfect foresight, FCR prices of fcrAuction2 only",2397396.31,239739.63,257.18,8.25,47070.07,

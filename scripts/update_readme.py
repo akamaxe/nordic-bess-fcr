@@ -92,10 +92,17 @@ def simulation_table(k: pd.Series) -> str:
 
 
 def m2b_table(df: pd.DataFrame) -> str:
-    lines = ["| Case | Net kEUR/MW-yr | Value of perfect information |", "|---|---:|---:|"]
+    lines = [
+        "| Case | Net kEUR / MW-yr | Change vs reference | Cycles / yr |",
+        "|---|---:|---:|---:|",
+    ]
     for _, r in df.iterrows():
-        vpi = "-" if pd.isna(r["vpi_eur_per_mw_year"]) else f"{r['vpi_eur_per_mw_year'] / 1e3:.1f}"
-        lines.append(f"| {r['case']} | {r['eur_per_mw_year'] / 1e3:.1f} | {vpi} |")
+        delta = r["delta_vs_reference_eur_per_mw_year"] / 1e3
+        change = "reference" if abs(delta) < 1e-9 else f"{delta:+.1f}"
+        lines.append(
+            f"| {r['case']} | {r['eur_per_mw_year'] / 1e3:.1f} | {change} | "
+            f"{r['cycles_per_year']:.0f} |"
+        )
     return "\n".join(lines)
 
 
