@@ -80,8 +80,10 @@ def evaluate_r1_fcr_n(
 ) -> list[RequirementResult]:
     """Requirement 1 for FCR-N from the step sequence (FCR v1.1, 3.1.1, eq. 1-3)."""
     t = sig.t_s
-    pss = {k: _mean_window(t, p_mw, sig.segment(k).t_end_s, window_s) for k in
-           ("step0", "step1", "step2", "step3")}  # fmt: skip
+    pss = {
+        k: _mean_window(t, p_mw, sig.segment(k).t_end_s, window_s)
+        for k in ("step0", "step1", "step2", "step3")
+    }
     base = 0.5 * (pss["step0"] + pss["step3"])
     dp1, dp2 = pss["step1"] - base, pss["step2"] - base  # eq. 1, 2
     th = abs(dp_th_mw)
@@ -114,13 +116,31 @@ def evaluate_fcr_d_ramp(
     pss4 = _mean_window(t, p_mw, sig.segment("ramp4").t_end_s, window_s)
     dss = pss3 - pss4
     if up:
-        results.append(_ratio_result("R1", name, (dss - th) / th, -0.05, 0.20,
-                                     f"P_ss,3 - P_ss,4 = {dss:.3f} MW", k_red_needed(dss, th),
-                                     k_min))  # fmt: skip
+        results.append(
+            _ratio_result(
+                "R1",
+                name,
+                (dss - th) / th,
+                -0.05,
+                0.20,
+                f"P_ss,3 - P_ss,4 = {dss:.3f} MW",
+                k_red_needed(dss, th),
+                k_min,
+            )
+        )
     else:
-        results.append(_ratio_result("R1", name, (dss + th) / th, -0.20, 0.05,
-                                     f"P_ss,3 - P_ss,4 = {dss:.3f} MW", k_red_needed(dss, th),
-                                     k_min))  # fmt: skip
+        results.append(
+            _ratio_result(
+                "R1",
+                name,
+                (dss + th) / th,
+                -0.20,
+                0.05,
+                f"P_ss,3 - P_ss,4 = {dss:.3f} MW",
+                k_red_needed(dss, th),
+                k_min,
+            )
+        )
 
     # Requirements 2 and 3 on ramp 5, relative to the power just before the ramp.
     r5 = sig.segment("ramp5")
@@ -138,7 +158,7 @@ def evaluate_fcr_d_ramp(
             dp75 >= R2_SHARE * th,
             f"dP(7.5 s) = {dp75:.3f} MW = {dp75 / th:.3f} |dP_th| (need {R2_SHARE})",
             "p.u.",
-        )  # fmt: skip
+        )
     )
     after = (t > t0 + T_EVAL_S) & (t < sig.segment("ramp6").t_start_s)
     sag = float(np.max(dp75 - dp[after], initial=0.0)) / th
@@ -152,7 +172,7 @@ def evaluate_fcr_d_ramp(
             f"largest drop below dP(7.5 s) before ramp 6: {sag:.4f} |dP_th| "
             "(small damped oscillations accepted; 1 % tolerance used)",
             "p.u.",
-        )  # fmt: skip
+        )
     )
     results.append(
         RequirementResult(
@@ -163,7 +183,7 @@ def evaluate_fcr_d_ramp(
             e75 >= R3_SECONDS * th,
             f"E(7.5 s) = {e75:.2f} MWs = {e75 / th:.2f} s x |dP_th| (need {R3_SECONDS} s)",
             "s",
-        )  # fmt: skip
+        )
     )
 
     # Requirement 4: deactivation after the nadir of ramps 1-2.
@@ -184,7 +204,7 @@ def evaluate_fcr_d_ramp(
             worst <= R4_SECONDS * th,
             f"max excess energy after the nadir = {worst:.2f} MWs = {worst / th:.2f} s x |dP_th|",
             "s",
-        )  # fmt: skip
+        )
     )
     return results
 
@@ -219,7 +239,7 @@ def evaluate_frequency_domain(
                 else ""
             ),
             "p.u.",
-        )  # fmt: skip
+        )
     )
 
     grid, f_dense = fd.interpolate_f(pts)
@@ -243,7 +263,7 @@ def evaluate_frequency_domain(
             f"worst normalised RMS error of the fitted sine: {worst.linearity_ratio:.3f} "
             f"(T = {worst.period_s:g} s)",
             "p.u.",
-        )  # fmt: skip
+        )
     )
     return results
 

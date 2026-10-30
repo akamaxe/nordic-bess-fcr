@@ -140,6 +140,11 @@ def evaluate_r12_ler(run: LerRun) -> RequirementResult:
         + ("; " + "; ".join(failures) if failures else "; no abrupt stop")
     )
     return RequirementResult(
-        "R12 (LER)", name[run.product], float(n_ok), f"{len(run.steps)} steps",
-        not failures, explanation, "steps",
-    )  # fmt: skip
+        "R12 (LER)",
+        name[run.product],
+        float(n_ok),
+        f"{len(run.steps)} steps",
+        not failures,
+        explanation,
+        "steps",
+    )

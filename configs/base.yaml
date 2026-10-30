@@ -55,6 +55,14 @@ simulation:
   week_start: "2025-03-03T00:00:00Z"   # pick a week inside the downloaded Fingrid month
   max_frequency_gap_s: 600       # longest frequency gap filled by linear interpolation
 
+compliance:                      # prequalification tests run on the BESS model (PLAN M4)
+  c_fcr_n_mw: 7.46               # tested capacity: P_max / 1.34 (Table 10 power reservation)
+  c_fcr_dup_mw: 10.0             # FCR-D alone may use the full converter rating
+  c_fcr_ddown_mw: 10.0
+  steady_state_window_s: 60      # P_ss = mean over the last 60 s of a hold (assumption)
+  ler_start_margin_min: 2.0      # LER tests start 2 min of full activation before the NEM
+                                 # threshold (allowed by section 3.5.3 to shorten the test)
+
 paths:
   raw: data/raw
   processed: data/processed

@@ -196,6 +196,24 @@ class SimulationConfig:
 
 
 @dataclass(frozen=True)
+class ComplianceConfig:
+    """Prequalification test settings for the BESS model (PLAN M4)."""
+
+    c_fcr_n_mw: float
+    c_fcr_dup_mw: float
+    c_fcr_ddown_mw: float
+    steady_state_window_s: float
+    ler_start_margin_min: float
+
+    def __post_init__(self) -> None:
+        for name in ("c_fcr_n_mw", "c_fcr_dup_mw", "c_fcr_ddown_mw", "steady_state_window_s"):
+            if not getattr(self, name) > 0:
+                raise ConfigError(f"compliance.{name} must be positive")
+        if self.ler_start_margin_min < 0:
+            raise ConfigError("compliance.ler_start_margin_min must be >= 0")
+
+
+@dataclass(frozen=True)
 class PathsConfig:
     """Absolute project paths, resolved against the repository root."""
 
@@ -214,6 +232,7 @@ class Config:
     bess: BessConfig
     fcr: FcrRequirementsConfig
     simulation: SimulationConfig
+    compliance: ComplianceConfig
     paths: PathsConfig
     source: Path
 
@@ -238,7 +257,7 @@ def config_from_dict(raw: dict[str, Any], root: Path, source: Path | None = None
         root: Repository root used to resolve the relative paths.
         source: File the mapping was read from (kept for traceability).
     """
-    sections = {"market", "bess", "fcr_requirements", "simulation", "paths"}
+    sections = {"market", "bess", "fcr_requirements", "simulation", "compliance", "paths"}
     if missing := sections - set(raw):
         raise ConfigError(f"missing sections {sorted(missing)}")
     if unknown := set(raw) - sections:
@@ -301,6 +320,10 @@ def config_from_dict(raw: dict[str, Any], root: Path, source: Path | None = None
         max_frequency_gap_s=float(s["max_frequency_gap_s"]),
     )
 
+    cp = dict(raw["compliance"])
+    _require_keys(cp, ComplianceConfig, "compliance")
+    compliance = ComplianceConfig(**{k: float(v) for k, v in cp.items()})
+
     p = dict(raw["paths"])
     _require_keys(p, PathsConfig, "paths")
     paths = PathsConfig(**{k: (root / v).resolve() for k, v in p.items()})
@@ -310,6 +333,7 @@ def config_from_dict(raw: dict[str, Any], root: Path, source: Path | None = None
         bess=bess,
         fcr=fcr,
         simulation=simulation,
+        compliance=compliance,
         paths=paths,
         source=(source or root).resolve(),
     )
