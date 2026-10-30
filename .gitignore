@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Secrets
+.env
+
+# Data (samples in data/sample/ ARE committed)
+data/raw/
+data/processed/
+
+# Local copies of reference documents (PDF, text dump, one-PDF-per-page split)
+docs/references/
+
+# Outputs that scripts regenerate (results/*.csv is committed for the README)
+results/*.parquet
+
+# MATLAB / Simulink
+simulink/slprj/
+*.slxc
+*.asv
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

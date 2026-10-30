@@ -1,0 +1,44 @@
+[project]
+name = "nordic-bess-fcr"
+version = "0.1.0"
+description = "A Nordic BESS from market decision to real-time control, validated against the FCR technical requirements v1.1."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "scipy",
+    "matplotlib",
+    "pyomo",
+    "highspy",
+    "entsoe-py",
+    "requests",
+    "python-dotenv",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+fast = ["numba"]
+
+[dependency-groups]
+dev = ["pytest", "ruff"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nordic_bess"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "NPY"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
