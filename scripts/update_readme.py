@@ -1,6 +1,6 @@
-"""Fill the result tables of README.md from results/*.csv.
+"""Fill the result blocks of README.md from results/*.csv.
 
-Every number in the README tables comes from a CSV written by the pipeline scripts.
+Every number in these blocks comes from a CSV written by the pipeline scripts.
 Blocks between ``<!-- BEGIN name -->`` and ``<!-- END name -->`` are replaced; a block
 whose CSV is missing is left untouched.
 
@@ -16,8 +16,6 @@ from pathlib import Path
 import pandas as pd
 
 from nordic_bess.config import load_config
-
-PRODUCTS = ("FCR-N", "FCR-D up", "FCR-D down")
 
 
 def revenue_table(df: pd.DataFrame, p_max_mw: float) -> str:
@@ -48,27 +46,20 @@ def revenue_table(df: pd.DataFrame, p_max_mw: float) -> str:
     return "\n".join(lines) + "\n\n" + caption
 
 
-def compliance_table(df: pd.DataFrame) -> str:
-    reqs = list(dict.fromkeys(df["requirement"]))
-    lines = ["| Requirement | " + " | ".join(PRODUCTS) + " |", "|---|---|---|---|"]
-    for req in reqs:
-        cells = []
-        for prod in PRODUCTS:
-            row = df[(df["requirement"] == req) & (df["product"] == prod)]
-            if row.empty:
-                cells.append("-")
-                continue
-            r = row.iloc[0]
-            mark = "PASS" if r["passed"] else "**FAIL**"
-            unit = " s" if r["unit"] == "s" else ""
-            value = f"{r['measured']:.0f}" if r["unit"] == "steps" else f"{r['measured']:.2f}"
-            cells.append(f"{mark} ({value}{unit}; {r['threshold']})")
-        lines.append(f"| {req} | " + " | ".join(cells) + " |")
+def compliance_summary(df: pd.DataFrame) -> str:
+    """One paragraph with the verdict; the full table is in docs/compliance_report.md."""
     n_pass, n = int(df["passed"].sum()), len(df)
-    verdict = f"All {n} checks pass." if n_pass == n else f"{n_pass} of {n} checks pass."
+    reqs = sorted({int(x) for x in df["requirement"].str.extract(r"R(\d+)")[0]})
+    req_list = ", ".join(str(r) for r in reqs[:-1]) + f" and {reqs[-1]}"
+    if n_pass == n:
+        verdict = f"All {n} checks pass"
+    else:
+        failed = ", ".join(f"{r.requirement} {r.product}" for r in df[~df["passed"]].itertuples())
+        verdict = f"{n_pass} of {n} checks pass (failed: {failed})"
     return (
-        "\n".join(lines) + f"\n\n{verdict} Each cell gives the measured value and the limit. "
-        "The full report with figures is in [docs/compliance_report.md](docs/compliance_report.md)."
+        f"{verdict}. They cover Requirements {req_list}, each for the products it applies "
+        "to. The measured value and limit of every check, and a figure for every test, are "
+        "in [docs/compliance_report.md](docs/compliance_report.md)."
     )
 
 
@@ -136,7 +127,7 @@ def main() -> None:
     text = readme.read_text(encoding="utf-8")
     blocks = {
         "revenue": (res / "revenue_summary.csv", lambda d: revenue_table(d, cfg.bess.p_max_mw)),
-        "compliance": (res / "compliance_results.csv", compliance_table),
+        "compliance": (res / "compliance_results.csv", compliance_summary),
         "simulation": (res / "simulation_kpis.csv", lambda d: simulation_table(d.iloc[0])),
         "market_cases": (res / "market_cases.csv", market_cases_table),
     }

@@ -64,5 +64,6 @@ strategy.
 - Put effort into price forecasting and re-planning from the measured state of charge
   before adding more trading strategies.
 
-*Method and limitations are in the [README](../README.md). FCR prices: Svenska kraftnät
+*The method is in the [README](../README.md) and the limitations in
+[assumptions.md](assumptions.md). FCR prices: Svenska kraftnät
 (CC BY 4.0). Day-ahead prices: ENTSO-E. Frequency: Fingrid (CC BY 4.0).*

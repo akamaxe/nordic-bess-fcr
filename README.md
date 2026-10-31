@@ -27,13 +27,10 @@ reservoir (LER) must hold back for each MW it sells, section 3.5 describes how i
 its state of charge (Normal and Alert State Energy Management, NEM and AEM), and the
 prequalification tests decide whether it may sell at all.
 
-This repository follows one battery through those steps. A market model chooses what to
-sell each hour, a controller and plant model deliver it on measured grid frequency, and a
-test bench runs the official prequalification signals and scores the response. The data
-are ENTSO-E day-ahead prices, Svenska kraftnät FCR capacity prices and Fingrid 10 Hz
-frequency measurements.
+This repository follows one battery through those steps, using ENTSO-E day-ahead prices,
+Svenska kraftnät FCR capacity prices and Fingrid 10 Hz frequency measurements.
 
-## Structure
+## How it works
 
 ```mermaid
 flowchart LR
@@ -71,7 +68,7 @@ flowchart LR
 | Prequalification tests | `src/nordic_bess/compliance/` | `scripts/run_compliance.py` | [docs/compliance_report.md](docs/compliance_report.md) |
 | Simulink twin | `simulink/` (MATLAB, Simscape Electrical) | `simulink/run_twin.m`, `scripts/evaluate_twin.py` | [docs/twin_report.md](docs/twin_report.md) |
 
-## Market model
+### The market model
 
 Each UTC day is one mixed-integer linear program (Pyomo with HiGHS), solved with hourly
 prices as a price taker. The decisions are the day-ahead charge and discharge power and
@@ -115,8 +112,6 @@ co-optimised result (S3). Co-optimisation adds FCR-D and arbitrage in the hours 
 FCR-N is cheap. The Table 10 power reservation binds in about 94 % of the hours and the
 energy reservation in about a quarter of them.
 
-![S3 allocation](docs/figures/market_allocation_heatmap_s3.png)
-
 ### Forecasts, 15-minute prices and rule changes
 
 <!-- BEGIN market_cases -->
@@ -136,34 +131,20 @@ Bidding FCR on a naive forecast (the same hour one week earlier) loses about 15 
 perfect-foresight revenue. Nearly all of that loss comes from the FCR decision: once the
 capacity is sold there is little headroom left for arbitrage, so forecasting day-ahead
 prices as well changes almost nothing. A two-stage stochastic model that uses the past
-four weeks as scenarios recovers about a fifth of the loss and cycles the battery less
-(92 cycles a year instead of 140). The switch to 15-minute day-ahead prices in October
-2025 adds almost nothing to an FCR-led strategy.
+four weeks as scenarios recovers about a fifth of the loss and cycles the battery less.
+The switch to 15-minute day-ahead prices in October 2025 adds almost nothing to an
+FCR-led strategy.
 
-Svenska kraftnät publishes two auction rounds and no combined price. The second round is
-thin and has large price spikes, and pricing all capacity at its level would overstate
-revenue by 47 kEUR per MW-year, so the reference case uses the volume-weighted mean of
-both rounds. The last row tests a possible rule change: if FCR-N needs 1.5 h of energy
-per direction instead of 1 h, revenue falls by 24 kEUR per MW-year.
+Svenska kraftnät publishes two auction rounds and no combined price, so the reference
+case uses the volume-weighted mean of both. Pricing all capacity at the thin second round
+would overstate revenue by 47 kEUR per MW-year. The last row tests a possible rule
+change: if FCR-N needs 1.5 h of energy per direction instead of 1 h, revenue falls by
+24 kEUR per MW-year.
 
 ### Prequalification tests on the battery model
 
 <!-- BEGIN compliance -->
-| Requirement | FCR-N | FCR-D up | FCR-D down |
-| --- | --- | --- | --- |
-| R1 up | PASS (0.00; [-0.05, 0.2]) | - | - |
-| R1 down | PASS (-0.00; [-0.2, 0.05]) | - | - |
-| R1 | - | PASS (-0.00; [-0.05, 0.2]) | PASS (0.00; [-0.2, 0.05]) |
-| R2 | - | PASS (1.00; >= 0.86) | PASS (1.00; >= 0.86) |
-| R2 hold | - | PASS (0.00; <= 0.01) | PASS (0.00; <= 0.01) |
-| R3 | - | PASS (6.51 s; >= 3.2 s) | PASS (6.51 s; >= 3.2 s) |
-| R4 | - | PASS (1.16 s; <= 2.5 s) | PASS (1.16 s; <= 2.5 s) |
-| R8 | PASS (2.19; > 0.4085 (0.43 x 0.95)) | PASS (1.54; > 0.4085 (0.43 x 0.95)) | PASS (1.54; > 0.4085 (0.43 x 0.95)) |
-| R9 | PASS (0.50; < 1) | PASS (0.13; < 1) | PASS (0.13; < 1) |
-| R10 | PASS (0.00; < 1) | PASS (0.00; < 1) | PASS (0.00; < 1) |
-| R12 (LER) | PASS (12; 12 steps) | PASS (5; 5 steps) | PASS (5; 5 steps) |
-
-All 24 checks pass. Each cell gives the measured value and the limit. The full report with figures is in [docs/compliance_report.md](docs/compliance_report.md).
+All 24 checks pass. They cover Requirements 1, 2, 3, 4, 8, 9, 10 and 12, each for the products it applies to. The measured value and limit of every check, and a figure for every test, are in [docs/compliance_report.md](docs/compliance_report.md).
 <!-- END compliance -->
 
 The tested capacities are 7.46 MW of FCR-N, the most a 10 MW unit can sell under
@@ -189,35 +170,24 @@ limits of Requirements 2 and 3.
 <!-- END simulation -->
 
 The S3 schedule was run at 1 s resolution on Fingrid frequency for the week starting
-3 March 2025. The controller kept every sold product available all week, but the stored
-energy drifted away from the plan, because the MILP starts each day at 50 % and ignores
-activation energy and losses. On 6 March a planned day-ahead discharge ran into an empty
-battery and 4.6 MWh were not delivered. Re-planning from the measured state of charge
-would avoid this.
+3 March 2025. Every sold product stayed available all week, but the stored energy drifted
+away from the plan, because the MILP starts each day at 50 % and ignores activation
+energy and losses. On 6 March a planned day-ahead discharge ran into an empty battery and
+4.6 MWh were not delivered. Re-planning from the measured state of charge would avoid
+this.
 
-![Plan versus simulation](docs/figures/simulation_week_energy_s3.png)
+### More results
 
-### Simulink twin
-
-The controller is also written as a MATLAB function inside a Simulink model, with a
-Simscape Electrical battery on the DC side. It runs the same exported test signals and
-the same Python evaluator scores its output. On the FCR-D ramp test it matches the Python
-model to an RMSE of 1.7e-6 MW (acceptance limit: 2 % of the tested capacity), and
-it gives the same pass/fail on every requirement. Both implement the same equations at the
-same 0.1 s step, so the close match mainly shows that the MATLAB version is a faithful
-port. Details in [docs/twin_report.md](docs/twin_report.md) and [simulink/](simulink/).
-
-![Python model versus Simulink twin](docs/figures/twin_fcr_d_up_ramp.png)
-
-### FCR prices since 2021
-
-![FCR price history](docs/figures/market_fcr_price_history.png)
-
-FCR capacity prices in SE3 have fallen steeply as batteries entered the market: FCR-N
-from 89 EUR/MW/h in 2022 to 26 in 2025, and FCR-D up from 86 to 6. Before February 2024
-Svenska kraftnät published average rather than marginal prices, so the early years are
-only indicative. The 2025 backtest already includes most of the fall, and the executive
-summary looks at what a further drop would cost.
+<table>
+<tr>
+<td width="50%"><img src="docs/figures/market_allocation_heatmap_s3.png" alt="S3 capacity allocation by hour and month"><br>Mean capacity sold under S3 by hour of day and month. FCR-N takes most of the power in almost every hour, and FCR-D fills in where FCR-N pays less, more often early in the year.</td>
+<td width="50%"><img src="docs/figures/simulation_week_energy_s3.png" alt="Stored energy, plan versus simulation"><br>Stored energy in the plan and in the simulation for the week of 3 March 2025. The simulated energy drifts below the plan, and on 6 March the battery runs empty during a planned discharge.</td>
+</tr>
+<tr>
+<td><img src="docs/figures/twin_fcr_d_up_ramp.png" alt="Python model and Simulink twin on the FCR-D up ramp test"><br>The Simulink twin, with a Simscape Electrical battery, against the Python model on the FCR-D up ramp test: RMSE 1.7e-6 MW and the same pass/fail on every requirement. Both run the same controller equations at a 0.1 s step, so the match mainly shows that the MATLAB port is faithful (<a href="docs/twin_report.md">twin report</a>).</td>
+<td><img src="docs/figures/market_fcr_price_history.png" alt="FCR capacity prices in SE3 since 2021"><br>FCR capacity prices in SE3 since 2021. As batteries entered the market, FCR-N fell from 89 EUR/MW/h in 2022 to 26 in 2025 and FCR-D up from 86 to 6. Before 2024 Svenska kraftnät published average prices, so those years are only indicative.</td>
+</tr>
+</table>
 
 ## Running it
 
@@ -240,45 +210,22 @@ need no network access or API key. CI runs them on every push. Other scripts:
 
 ## Assumptions and limitations
 
-### Market
+The ones that matter most for the results:
 
-- Price taker. The reference case has perfect foresight, so its revenue is an upper
-  bound. The forecast cases use a naive same-hour-last-week forecast; there is no better
-  forecasting model.
-- Svenska kraftnät publishes two procurement rounds (D-2 and D-1) and no "Total" series.
-  The model uses their volume-weighted mean ([docs/DATA.md](docs/DATA.md)).
-- Each UTC day is planned on its own and starts and ends at 50 % of the usable energy.
-  FCR activation energy, its settlement and the imbalance it causes are not part of the
-  plan.
-- The reference case is hourly: the 15-minute day-ahead prices from 2025-10-01 are
-  averaged, and only the 15-minute case uses them directly. In the forecast cases every
-  offer is accepted at the clearing price (bids at 0 EUR/MW/h).
-- Intraday and mFRR markets are not modelled.
+- The reference case has perfect foresight, so its revenue is an upper bound. The
+  forecast cases use a naive same-hour-last-week forecast.
+- Each day is planned on its own from 50 % of the usable energy, and the plan ignores FCR
+  activation energy. Together with losses, this is why the simulated state of charge
+  drifts away from the plan.
+- The market model is hourly. The 15-minute day-ahead prices from October 2025 are
+  averaged, except in the case that tests them.
+- The battery has constant efficiency (90 % round trip), a first-order converter lag and
+  no capacity fade. Degradation is a linear cost of 10 EUR per MWh discharged.
+- The prequalification tests are simulations, without measurement noise or the frequency
+  measurement equipment. Requirements 1b, 5-7, 11 and 13 are not evaluated.
 
-### Battery and controller
-
-- Constant charge and discharge efficiency (0.9487 each, 90 % round trip), no auxiliary
-  load and no capacity fade. Degradation is a linear cost of 10 EUR per MWh discharged.
-- The converter is a first-order lag with a 0.2 s time constant, and the frequency
-  measurement is ideal.
-- The Table 11 thresholds are used as printed. The TSOs allow moving the disable
-  thresholds for reservoirs larger than the minimum, which would let NEM bring the state
-  of charge back to 50 %.
-- When several products are sold, the FCR-D energy reserves sit at the edges of the
-  usable range and the FCR-N thresholds move inwards. This is my reading of section 3.5.
-- Only one week of measured frequency (March 2025) is simulated.
-
-### Prequalification tests
-
-- These are simulations, not field tests: there is no measurement noise and no dependence
-  on temperature or load. The test signal goes straight into the controller, so the
-  transfer function of the frequency measurement equipment (section 4.4) is left out.
-- The steady-state power of a hold is the mean of its last 60 s. The requirements accept
-  "small damped oscillations" after 7.5 s, which I implement as a 1 % tolerance.
-- Not evaluated: Requirement 1b (FCR-N and FCR-D combined), 5-7 and 11 (static FCR-D)
-  and 13 (mode shifting, which a battery does not use).
-- Requirement 8 uses G0 = F·G as in eq. 10, while the requirement box prints -F·G.
-  [docs/FCR_SPEC_NOTES.md](docs/FCR_SPEC_NOTES.md) explains why.
+The full list, with my reading of the parts of the FCR requirements that leave room for
+interpretation, is in [docs/assumptions.md](docs/assumptions.md).
 
 ## Next steps
 

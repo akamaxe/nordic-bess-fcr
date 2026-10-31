@@ -7,7 +7,7 @@ minus the baseline, positive upwards.
 
 Steady-state power ``P_ss`` of a hold is the mean over its last
 ``steady_state_window_s`` seconds (the requirements do not fix the averaging window;
-see README assumptions).
+see docs/assumptions.md).
 """
 
 from __future__ import annotations
